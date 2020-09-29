@@ -30,3 +30,8 @@ Confluent classes while other applications can be using Apicurio Registry classe
 can all work together seamlessly with just a little bit of extra configuration.  This example
 is essentially the same as the Simple Avro Example, but using a Confluent serializer with an
 Apicurio Registry deserializer.
+
+## Avro Bean Example
+This example demonstrates how to use Avro as the schema and serialization technology while 
+using a Java Bean as the Kafka message payload.  This is essentially the same as the Simple
+Avro Example, but using a java bean instead of a `GenericRecord` as the message payload.

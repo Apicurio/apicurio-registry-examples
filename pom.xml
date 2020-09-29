@@ -38,6 +38,7 @@
         <module>simple-avro</module>
         <module>simple-json</module>
         <module>confluent-serdes</module>
+        <module>avro-bean</module>
     </modules>
 
     <properties>
