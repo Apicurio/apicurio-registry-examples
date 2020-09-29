@@ -39,6 +39,7 @@
         <module>simple-json</module>
         <module>confluent-serdes</module>
         <module>avro-bean</module>
+        <module>custom-id-strategy</module>
     </modules>
 
     <properties>

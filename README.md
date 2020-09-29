@@ -35,3 +35,11 @@ Apicurio Registry deserializer.
 This example demonstrates how to use Avro as the schema and serialization technology while 
 using a Java Bean as the Kafka message payload.  This is essentially the same as the Simple
 Avro Example, but using a java bean instead of a `GenericRecord` as the message payload.
+
+## Custom ID Strategy Example
+This example demonstrates how to use a custom Global ID strategy.  The Global ID strategy is
+used by a producer (serializer) application to lookup (or create) the Schema it is using for
+serialization.  Apicurio Registry comes with some useful implementations of the Global ID
+strategy out of the box, but it is possible to create your own.  This example is essentially
+the same as the Simple Avro Example, except instead of using one of the default Apicurio
+Registry Global ID strategies, it uses a custom one.
