@@ -36,6 +36,7 @@
 
     <modules>
         <module>simple-avro</module>
+        <module>simple-json</module>
     </modules>
 
     <properties>
