@@ -160,6 +160,7 @@ public class SimpleJsonSchemaExample {
         }
         
         System.out.println("Done (success).");
+        System.exit(0);
     }
 
     /**

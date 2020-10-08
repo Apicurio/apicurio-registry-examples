@@ -43,3 +43,10 @@ serialization.  Apicurio Registry comes with some useful implementations of the 
 strategy out of the box, but it is possible to create your own.  This example is essentially
 the same as the Simple Avro Example, except instead of using one of the default Apicurio
 Registry Global ID strategies, it uses a custom one.
+
+## Simple Avro Maven Example
+This example application demonstrates how to use the Apicurio Registry maven plugin to 
+pre-register an Avro schema so that it does not need to be embedded within the producer
+application.  Note that this example will fail unless the maven plugin is executed before
+the Java application.  See the javadoc in the example for details.s
+

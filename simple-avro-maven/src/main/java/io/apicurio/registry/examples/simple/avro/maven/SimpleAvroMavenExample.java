@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package io.apicurio.registry.examples.confluent.serdes;
+package io.apicurio.registry.examples.simple.avro.maven;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
+
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
@@ -34,20 +40,24 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import io.apicurio.registry.client.RegistryRestClient;
+import io.apicurio.registry.client.RegistryRestClientFactory;
 import io.apicurio.registry.utils.serde.AbstractKafkaSerDe;
+import io.apicurio.registry.utils.serde.AbstractKafkaSerializer;
 import io.apicurio.registry.utils.serde.AvroKafkaDeserializer;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.apicurio.registry.utils.serde.AvroKafkaSerializer;
+import io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy;
+import io.apicurio.registry.utils.serde.strategy.SimpleTopicIdStrategy;
 
 /**
  * This example demonstrates how to use the Apicurio Registry in a very simple publish/subscribe
- * scenario where applications use a mix of Confluent and Apicurio Registry serdes classes.  This
- * example uses the Confluent serializer for the producer and the Apicurio Registry deserializer
- * class for the consumer.
+ * scenario with Avro as the serialization type and the Schema pre-registered via a Maven plugin.  
+ * The following aspects are demonstrated:
  * 
  * <ol>
- *   <li>Configuring a Confluent Kafka Serializer for use with Apicurio Registry</li>
+ *   <li>Configuring a Kafka Serializer for use with Apicurio Registry</li>
  *   <li>Configuring a Kafka Deserializer for use with Apicurio Registry</li>
- *   <li>Auto-register the Avro schema in the registry (registered by the producer)</li>
+ *   <li>Pre-register the Avro schema in the registry via the Maven plugin</li>
  *   <li>Data sent as a simple GenericRecord, no java beans needed</li>
  * </ol>
  * 
@@ -56,30 +66,47 @@ import io.confluent.kafka.serializers.KafkaAvroSerializer;
  * <ul>
  *   <li>Kafka must be running on localhost:9092</li>
  *   <li>Apicurio Registry must be running on localhost:8080</li>
+ *   <li>Schema is registered by executing "mvn io.apicurio:apicurio-registry-maven-plugin:register@register-artifact"</li>
  * </ul>
+ * 
+ * Note that this application will fail if the above maven command is not run first, since 
+ * the schema will not be present in the registry.
  * 
  * @author eric.wittmann@gmail.com
  */
-public class ConfluentSerdesExample {
+public class SimpleAvroMavenExample {
     
     private static final String REGISTRY_URL = "http://localhost:8080/api";
     private static final String SERVERS = "localhost:9092";
-    private static final String TOPIC_NAME = ConfluentSerdesExample.class.getSimpleName();
+    private static final String TOPIC_NAME = SimpleAvroMavenExample.class.getSimpleName();
     private static final String SUBJECT_NAME = "Greeting";
-    private static final String SCHEMA = "{\"type\":\"record\",\"name\":\"Greeting\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Time\",\"type\":\"long\"}]}";
 
     
     public static final void main(String [] args) throws Exception {
-        System.out.println("Starting example " + ConfluentSerdesExample.class.getSimpleName());
+        System.out.println("Starting example " + SimpleAvroMavenExample.class.getSimpleName());
         String topicName = TOPIC_NAME;
         String subjectName = SUBJECT_NAME;
+        String artifactId = topicName;
+        
+        // Get the schema from the registry so we can use it to create GenericData.Records later
+        RegistryRestClient client = RegistryRestClientFactory.create(REGISTRY_URL);
+        String schemaData = null;
+        try (InputStream latestArtifact = client.getLatestArtifact(artifactId)) {
+            schemaData = toString(latestArtifact);
+        } catch (WebApplicationException e) {
+            if (e.getResponse().getStatus() == 404) {
+                System.err.println("Schema not registered in registry.  Before running this example, please do:");
+                System.err.println("  mvn io.apicurio:apicurio-registry-maven-plugin:register@register-artifact");
+                System.exit(1);
+            }
+        }
 
         // Create the producer.
         Producer<Object, Object> producer = createKafkaProducer();
         // Produce 5 messages.
         int producedMessages = 0;
         try {
-            Schema schema = new Schema.Parser().parse(SCHEMA);
+            Schema schema = new Schema.Parser().parse(schemaData);
             System.out.println("Producing (5) messages.");
             for (int idx = 0; idx < 5; idx++) {
                 // Use the schema to create a record
@@ -145,12 +172,14 @@ public class ConfluentSerdesExample {
         props.putIfAbsent(ProducerConfig.ACKS_CONFIG, "all");
         props.putIfAbsent(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         // Use the Apicurio Registry provided Kafka Serializer for Avro
-        props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
-        // Configure Service Registry location (Confluent API)
-        props.put("schema.registry.url", REGISTRY_URL + "/ccompat");
-        props.put("auto.register.schemas", "true");
+        props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroKafkaSerializer.class.getName());
+
+        // Configure Service Registry location
+        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
         // Map the topic name to the artifactId in the registry
-        props.put("value.subject.name.strategy", "io.confluent.kafka.serializers.subject.TopicRecordNameStrategy");
+        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_ARTIFACT_ID_STRATEGY_CONFIG_PARAM, SimpleTopicIdStrategy.class.getName());
+        // Get an existing schema or auto-register if not found
+        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_GLOBAL_ID_STRATEGY_CONFIG_PARAM, GetOrCreateIdStrategy.class.getName());
 
         // Create the Kafka producer
         Producer<Object, Object> producer = new KafkaProducer<>(props);
@@ -175,8 +204,6 @@ public class ConfluentSerdesExample {
 
         // Configure Service Registry location
         props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
-        // Enable "Confluent Compatible API" mode in the Apicurio Registry deserializer
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_CONFLUENT_ID_HANDLER_CONFIG_PARAM, "true");
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.
@@ -184,6 +211,20 @@ public class ConfluentSerdesExample {
         // Create the Kafka Consumer
         KafkaConsumer<Long, GenericRecord> consumer = new KafkaConsumer<>(props);
         return consumer;
+    }
+
+    /**
+     * Reads the entire contents of the input stream as a string.
+     * @param data
+     */
+    private static String toString(InputStream data) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buff = new byte[64];
+        int count;
+        while ((count = data.read(buff)) != -1) {
+            baos.write(buff, 0, count);
+        }
+        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
 }

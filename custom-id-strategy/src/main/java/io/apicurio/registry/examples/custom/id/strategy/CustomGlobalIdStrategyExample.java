@@ -124,6 +124,7 @@ public class CustomGlobalIdStrategyExample {
         }
         
         System.out.println("Done (success).");
+        System.exit(0);
     }
 
     /**

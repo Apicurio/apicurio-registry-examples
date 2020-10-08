@@ -131,6 +131,7 @@ public class SimpleAvroExample {
         }
         
         System.out.println("Done (success).");
+        System.exit(0);
     }
 
     /**

@@ -126,6 +126,7 @@ public class AvroBeanExample {
         }
         
         System.out.println("Done (success).");
+        System.exit(0);
     }
 
     /**
