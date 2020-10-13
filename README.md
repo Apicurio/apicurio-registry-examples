@@ -51,6 +51,7 @@ application.  Note that this example will fail unless the maven plugin is execut
 the Java application.  See the javadoc in the example for details.
 
 ## Rest Client example
-
-This example application demonstrates how to use the Apicurio Registry rest client to create, delete, or fetch schemas. This example contains two basic java application, one showing how to improve the logs by logging all the request and response headers and a basic example on how to use the client.
-
+This example application demonstrates how to use the Apicurio Registry rest client to create, 
+delete, or fetch schemas. This example contains two basic java application, one showing how to 
+improve the logs by logging all the request and response headers and a basic example on how to 
+use the client.
