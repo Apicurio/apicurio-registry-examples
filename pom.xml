@@ -41,6 +41,7 @@
         <module>avro-bean</module>
         <module>custom-id-strategy</module>
         <module>simple-avro-maven</module>
+        <module>rest-client</module>
     </modules>
 
     <properties>
@@ -63,6 +64,9 @@
         
         <!-- RestEasy -->
         <resteasy.version>4.5.8.Final</resteasy.version>
+
+        <!-- Slf4j -->
+        <slf4j.version>1.7.25</slf4j.version>
 
         <!-- Plugin Versions -->
         <version.compiler.plugin>3.8.1</version.compiler.plugin>
