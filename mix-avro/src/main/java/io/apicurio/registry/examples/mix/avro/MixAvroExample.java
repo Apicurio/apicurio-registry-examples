@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.apicurio.registry.examples.simple.avro;
+package io.apicurio.registry.examples.mix.avro;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -43,15 +43,17 @@ import io.apicurio.registry.utils.serde.strategy.CachedSchemaIdStrategy;
 import io.apicurio.registry.utils.serde.strategy.RecordIdStrategy;
 
 /**
- * This example demonstrates how to use the Apicurio Registry in a very simple publish/subscribe
- * scenario with Avro as the serialization type.  The following aspects are demonstrated:
+ * This example application showcases an scenario where Apache Avro messages are published to the same
+ * Kafka topic using different Avro schemas. This example uses the Apicurio Registry serdes classes to serialize
+ * and deserialize Apache Avro messages using different schemas, even if received in the same Kafka topic.
+ * The following aspects are demonstrated:
  *
  * <ol>
  *   <li>Configuring a Kafka Serializer for use with Apicurio Registry</li>
  *   <li>Configuring a Kafka Deserializer for use with Apicurio Registry</li>
  *   <li>Auto-register the Avro schema in the registry (registered by the producer)</li>
  *   <li>Data sent as a simple GenericRecord, no java beans needed</li>
- *   <li>Producing and consuming avro messages using different schemas mapped to different Apicurio Registry Artifacts</li>
+ *   <li>Producing and consuming Avro messages using different schemas mapped to different Apicurio Registry Artifacts</li>
  * </ol>
  *
  * Pre-requisites:
@@ -61,13 +63,13 @@ import io.apicurio.registry.utils.serde.strategy.RecordIdStrategy;
  *   <li>Apicurio Registry must be running on localhost:8080</li>
  * </ul>
  *
- * @author eric.wittmann@gmail.com
+ * @author Fabian Martinez
  */
-public class SimpleAvroExample {
+public class MixAvroExample {
 
     private static final String REGISTRY_URL = "http://localhost:8080/api";
     private static final String SERVERS = "localhost:9092";
-    private static final String TOPIC_NAME = SimpleAvroExample.class.getSimpleName();
+    private static final String TOPIC_NAME = MixAvroExample.class.getSimpleName();
     private static final String SCHEMAV1 = "{\"type\":\"record\",\"name\":\"Greeting\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Time\",\"type\":\"long\"}]}";
     private static final String SCHEMAV2 = "{\"type\":\"record\",\"name\":\"Greeting\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Time\",\"type\":\"long\"},{\"name\":\"Extra\",\"type\":\"string\"}]}";
     private static final String FAREWELLSCHEMAV1 = "{\"type\":\"record\",\"name\":\"Farewell\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Time\",\"type\":\"long\"}]}";
@@ -75,7 +77,7 @@ public class SimpleAvroExample {
 
 
     public static final void main(String [] args) throws Exception {
-        System.out.println("Starting example " + SimpleAvroExample.class.getSimpleName());
+        System.out.println("Starting example " + MixAvroExample.class.getSimpleName());
         String topicName = TOPIC_NAME;
 
         // Create the producer.
@@ -83,11 +85,11 @@ public class SimpleAvroExample {
 
         int producedMessages = 0;
         try {
-            producedMessages = produceMessages(producer, topicName, SCHEMAV1, null);
+            producedMessages += produceMessages(producer, topicName, SCHEMAV1, null);
 
             producedMessages += produceMessages(producer, topicName, SCHEMAV2, "extra greeting");
 
-            producedMessages = produceMessages(producer, topicName, FAREWELLSCHEMAV1, null);
+            producedMessages += produceMessages(producer, topicName, FAREWELLSCHEMAV1, null);
 
             producedMessages += produceMessages(producer, topicName, FAREWELLSCHEMAV2, "extra farewell");
 

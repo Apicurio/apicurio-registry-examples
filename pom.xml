@@ -42,6 +42,7 @@
         <module>custom-id-strategy</module>
         <module>simple-avro-maven</module>
         <module>rest-client</module>
+        <module>mix-avro</module>
     </modules>
 
     <properties>
