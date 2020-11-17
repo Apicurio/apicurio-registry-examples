@@ -144,7 +144,7 @@ public class ConfluentSerdesExample {
         props.putIfAbsent(ProducerConfig.CLIENT_ID_CONFIG, "Producer-" + TOPIC_NAME);
         props.putIfAbsent(ProducerConfig.ACKS_CONFIG, "all");
         props.putIfAbsent(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        // Use the Apicurio Registry provided Kafka Serializer for Avro
+        // Use the Confluent provided Kafka Serializer for Avro
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
         // Configure Service Registry location (Confluent API)
         props.put("schema.registry.url", REGISTRY_URL + "/ccompat");
