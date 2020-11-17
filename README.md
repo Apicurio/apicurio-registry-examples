@@ -55,3 +55,8 @@ This example application demonstrates how to use the Apicurio Registry rest clie
 delete, or fetch schemas. This example contains two basic java application, one showing how to 
 improve the logs by logging all the request and response headers and a basic example on how to 
 use the client.
+
+## Mix Avro Schemas Example
+This example application showcases an scenario where Apache Avro messages are published to the same
+Kafka topic using different Avro schemas. This example uses the Apicurio Registry serdes classes to serialize
+and deserialize Apache Avro messages using different schemas, even if received in the same Kafka topic.
