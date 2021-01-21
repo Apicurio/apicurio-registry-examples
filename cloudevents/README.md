@@ -1,15 +1,20 @@
 # Apicurio Registry CloudEvents example
 
 This is an example application that implements a REST API that consumes and produces CloudEvents. 
-This example application showcases an experimental library from the apicurio-registry project. This library is used to validate incoming and outgoing CloudEvents messages in a REST API.
-The validation is performed against json schemas that are previously stored in Apicurio Registry.
+This example application showcases an experimental library from the Apicurio Registry project. This library is used to validate incoming and outgoing CloudEvents messages in a REST API.
+The validation is performed using json schemas that are previously stored in Apicurio Registry.
 
 ## Apicurio Registry CloudEvents serde
 
 The idea behind this library is to provide some kind of serdes library for CloudEvents that uses apicurio-registry to store the schemas used for serialization, deserialization or validation CloudEvents data.
-But always in the context of **CloudEvents and http**. Meaning that, at least for now, this library primarily allows to use CloudEvents with REST services and REST clients.
+But always in the context of **CloudEvents and http**. Meaning that, at least for now, this library primarily allows to use CloudEvents with REST services and REST clients. Also, this library only provides support for json schemas, support for other formats such as avro, protobuf,... could be easily implemented.
 
-**Note**: we are talking about serdes but **not** in the context of Kafka. This demo only focuses in sending CloudEvents using the http protocol.
+**Note**: we are talking about serdes but **not** in the context of Kafka. This demo only focuses in sending CloudEvents using the http protocol to send and receive CloudEvents.
+
+We are open to discussion if you consider it could be interesting to be able to do serdes plus validation of CloudEvents using Apicurio Registry **but** using another protocol or transport such as Kafka, AMQP, MQTT,... Feel free to create an issue or to reach out the Apicurio team.
+After implementing the serdes library for REST services we considered implementing the equivalent for Kafka but we dismissed this effort because of various reasons:
+**TODO**
+
 
 The apicurio-registry cloudevents library consists of two maven modules:
 - `apicurio-registry-utils-cloud-events-serde`, provides the serialization and deserialization API, with data validation included. This component calls Apicurio Registry to fetch the required schemas to perform the serialization/deserialization/validation.
