@@ -1,1 +1,0 @@
-http :8080/api/artifacts X-Registry-ArtifactId:io.famartin.processed-order < ./processed-order-schema.json

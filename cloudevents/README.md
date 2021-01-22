@@ -1,22 +1,37 @@
 # Apicurio Registry CloudEvents example
 
-This is an example application that implements a REST API that consumes and produces CloudEvents. 
-This example application showcases an experimental library from the Apicurio Registry project. This library is used to validate incoming and outgoing CloudEvents messages in a REST API.
+This is an example application that implements a REST API that consumes and produces CloudEvents.
+
+This example application is implemented thanks to an experimental library implemented within the Apicurio Registry project. This library is used to validate incoming and outgoing CloudEvents messages in a REST API.
 The validation is performed using json schemas that are previously stored in Apicurio Registry.
 
-## Apicurio Registry CloudEvents serde
+The idea behind this library is to provide a tool for serialization and deserialization of CloudEvents that uses Apicurio Registry to store the schemas used for serialization, deserialization or validation of CloudEvents data. This library is built on top of the CloudEvents Java SDK, that among other things provides the CloudEvent Java type.
 
-The idea behind this library is to provide some kind of serdes library for CloudEvents that uses apicurio-registry to store the schemas used for serialization, deserialization or validation CloudEvents data.
-But always in the context of **CloudEvents and http**. Meaning that, at least for now, this library primarily allows to use CloudEvents with REST services and REST clients. Also, this library only provides support for json schemas, support for other formats such as avro, protobuf,... could be easily implemented.
+For this PoC we only focused on **CloudEvents and http**. Meaning that, at least for now, this library primarily allows to use CloudEvents with REST services and REST clients. Also, this library only provides support for json schemas, support for other formats such as avro, protobuf,... could be easily implemented.
 
-**Note**: we are talking about serdes but **not** in the context of Kafka. This demo only focuses in sending CloudEvents using the http protocol to send and receive CloudEvents.
+### Apicurio Registry CloudEvents Serde and Kafka
 
-We are open to discussion if you consider it could be interesting to be able to do serdes plus validation of CloudEvents using Apicurio Registry **but** using another protocol or transport such as Kafka, AMQP, MQTT,... Feel free to create an issue or to reach out the Apicurio team.
-After implementing the serdes library for REST services we considered implementing the equivalent for Kafka but we dismissed this effort because of various reasons:
-**TODO**
+We decided to not focus on implementing a set of Kafka Serde classes that work with CloudEvents.
 
+We are open to discussion if you consider it could be interesting to be able to do serdes plus validation of CloudEvents using Apicurio Registry **but** using another protocol or transport such as Kafka, AMQP, MQTT,... Feel free to create an issue or to reach out to the Apicurio team.
 
-The apicurio-registry cloudevents library consists of two maven modules:
+After implementing the serdes library for REST services we considered implementing the equivalent for Kafka but we dismissed this effort, you can find below some of our reasons.
+
+Our current Serdes classes could be easily improved to make them more compatible with CloudEvents based use cases, and this approach would be preferrable rather than implementing a new set of Kafka Serdes classes for CloudEvents.
+
+The [KafkaConsumer API](https://kafka.apache.org/26/javadoc/index.html?org/apache/kafka/clients/consumer/KafkaConsumer.html) bounds the consumer to one class that will be the type of the message value that it will receive after deserialization, this means that all messages that a KafkaConsumer will receive are going to have the same structure.
+```
+KafkaConsumer<String, NewOrder> consumer;
+```
+However for CloudEvents use cases we don't see any value in having Kafka Serde that works with a generic type, such as the java class for CloudEvents would be.
+```
+KafkaConsumer<String, CloudEvent<NewOrder>> consumer;
+```
+If required, this approach could be easy to achieve with some improvements to our existing Serdes classes.
+
+## Apicurio Registry CloudEvents Serde library
+
+The Apicurio Registry CloudEvents library consists of two maven modules:
 - `apicurio-registry-utils-cloud-events-serde`, provides the serialization and deserialization API, with data validation included. This component calls Apicurio Registry to fetch the required schemas to perform the serialization/deserialization/validation.
 - `apicurio-registry-utils-cloud-events-provider`, this contains a jaxrs provider implemented on top of CloudEvents [java sdk for restful services](https://github.com/cloudevents/sdk-java/tree/master/http/restful-ws). This provider allows to implement REST APIs that consume and produce CloudEvents, like the CloudEvents sdk does, but validating the CloudEvents data and ensuring the data adheres to it's respective schema stored in Apicurio Registry.
 
@@ -40,7 +55,7 @@ After installing in your local maven repo the `apicurio-registry-utils-cloud-eve
 mvn package
 ```
 
-Once that's done you can start the apicurio-registry, I suggest doing it with a container
+Once that's done you can start Apicurio Registry, I suggest doing it with a container
 ```
 docker run -p 8080:8080 docker.io/apicurio/apicurio-registry-mem:1.3.2.Final
 ```
@@ -99,7 +114,7 @@ Content-Type: application/json
 
 ```
 
-Try to send a cloud event using a non-existent schema
+This command shows an example of what happens when you try to send a CloudEvent using a non-existent schema.
 ```
 $ curl -X POST -i -H "Content-Type: application/json" -H "ce-type:io.apicurio.examples.test" -H "ce-source:test" -H "ce-id:aaaaa" -H "ce-specversion:1.0" --data '{"itemId":"abcde","quantity":5}' http://localhost:8082/order
 HTTP/1.1 404 Not Found
