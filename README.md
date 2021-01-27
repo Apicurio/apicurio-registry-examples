@@ -60,3 +60,8 @@ use the client.
 This example application showcases an scenario where Apache Avro messages are published to the same
 Kafka topic using different Avro schemas. This example uses the Apicurio Registry serdes classes to serialize
 and deserialize Apache Avro messages using different schemas, even if received in the same Kafka topic.
+
+## Cloud Events PoC
+This is an example application that implements a REST API that consumes and produces CloudEvents.
+This example application showcases an experimental library from apicurio-registry project. This library is used to validate incoming and outgoing CloudEvents messages in the REST API.
+The validation is performed against json schemas that are stored in Apicurio Registry. For a more detailed explanation go [here](./cloudevents/README.md).
