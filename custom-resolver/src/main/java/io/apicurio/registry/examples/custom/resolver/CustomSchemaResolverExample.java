@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.apicurio.registry.examples.custom.id.strategy;
+package io.apicurio.registry.examples.custom.resolver;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -34,37 +34,35 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.utils.serde.AbstractKafkaSerDe;
-import io.apicurio.registry.utils.serde.AbstractKafkaSerializer;
-import io.apicurio.registry.utils.serde.AvroKafkaDeserializer;
-import io.apicurio.registry.utils.serde.AvroKafkaSerializer;
-import io.apicurio.registry.utils.serde.strategy.SimpleTopicIdStrategy;
+import io.apicurio.registry.serde.SerdeConfigKeys;
+import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
+import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
 
 /**
  * This example demonstrates how to use the Apicurio Registry in a very simple publish/subscribe
  * scenario with Avro as the serialization type.  The following aspects are demonstrated:
- * 
+ *
  * <ol>
  *   <li>Configuring a Kafka Serializer for use with Apicurio Registry</li>
  *   <li>Configuring a Kafka Deserializer for use with Apicurio Registry</li>
  *   <li>Register the Avro schema in the registry using a custom Global Id Strategy</li>
  *   <li>Data sent as a simple GenericRecord, no java beans needed</li>
  * </ol>
- * 
+ *
  * Pre-requisites:
- * 
+ *
  * <ul>
  *   <li>Kafka must be running on localhost:9092</li>
  *   <li>Apicurio Registry must be running on localhost:8080</li>
  * </ul>
- * 
+ *
  * @author eric.wittmann@gmail.com
  */
-public class CustomGlobalIdStrategyExample {
-    
-    
+public class CustomSchemaResolverExample {
+
+
     public static final void main(String [] args) throws Exception {
-        System.out.println("Starting example " + CustomGlobalIdStrategyExample.class.getSimpleName());
+        System.out.println("Starting example " + CustomSchemaResolverExample.class.getSimpleName());
         String topicName = Config.TOPIC_NAME;
         String subjectName = Config.SUBJECT_NAME;
 
@@ -82,11 +80,11 @@ public class CustomGlobalIdStrategyExample {
                 String message = "Hello (" + producedMessages++ + ")!";
                 record.put("Message", message);
                 record.put("Time", now.getTime());
-                
+
                 // Send/produce the message on the Kafka Producer
                 ProducerRecord<Object, Object> producedRecord = new ProducerRecord<>(topicName, subjectName, record);
                 producer.send(producedRecord);
-                
+
                 Thread.sleep(100);
             }
             System.out.println("Messages successfully produced.");
@@ -95,7 +93,7 @@ public class CustomGlobalIdStrategyExample {
             producer.flush();
             producer.close();
         }
-        
+
         // Create the consumer
         System.out.println("Creating the consumer.");
         KafkaConsumer<Long, GenericRecord> consumer = createKafkaConsumer();
@@ -122,7 +120,7 @@ public class CustomGlobalIdStrategyExample {
         } finally {
             consumer.close();
         }
-        
+
         System.out.println("Done (success).");
         System.exit(0);
     }
@@ -142,11 +140,9 @@ public class CustomGlobalIdStrategyExample {
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroKafkaSerializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, Config.REGISTRY_URL);
-        // Map the topic name to the artifactId in the registry
-        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_ARTIFACT_ID_STRATEGY_CONFIG_PARAM, SimpleTopicIdStrategy.class.getName());
-        // Use our custom global id strategy here.
-        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_GLOBAL_ID_STRATEGY_CONFIG_PARAM, CustomGlobalIdStrategy.class.getName());
+        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, Config.REGISTRY_URL);
+        // Use our custom resolver here.
+        props.putIfAbsent(SerdeConfigKeys.SCHEMA_RESOLVER, CustomSchemaResolver.class.getName());
 
         // Create the Kafka producer
         Producer<Object, Object> producer = new KafkaProducer<>(props);
@@ -170,7 +166,7 @@ public class CustomGlobalIdStrategyExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, Config.REGISTRY_URL);
+        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, Config.REGISTRY_URL);
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.

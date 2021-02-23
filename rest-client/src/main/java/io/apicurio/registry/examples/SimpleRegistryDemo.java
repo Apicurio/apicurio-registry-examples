@@ -1,10 +1,10 @@
 package io.apicurio.registry.examples;
 
-import io.apicurio.registry.client.RegistryRestClient;
-import io.apicurio.registry.client.RegistryRestClientFactory;
-import io.apicurio.registry.examples.util.RegistryDemoUtil;
-
 import java.util.UUID;
+
+import io.apicurio.registry.examples.util.RegistryDemoUtil;
+import io.apicurio.registry.rest.client.RegistryClient;
+import io.apicurio.registry.rest.client.RegistryClientFactory;
 
 
 /**
@@ -18,12 +18,12 @@ import java.util.UUID;
  */
 public class SimpleRegistryDemo {
 
-    private static final RegistryRestClient service;
+    private static final RegistryClient client;
 
     static {
         // Create a Service Registry client
-        String registryUrl = "http://localhost:8080/api/";
-        service = RegistryRestClientFactory.create(registryUrl);
+        String registryUrl = "http://localhost:8080/api/v2";
+        client = RegistryClientFactory.create(registryUrl);
     }
 
     public static void main(String[] args) throws Exception {
@@ -31,14 +31,14 @@ public class SimpleRegistryDemo {
         // Register the JSON Schema schema in the Apicurio registry.
         final String artifactId = UUID.randomUUID().toString();
 
-        RegistryDemoUtil.createSchemaInServiceRegistry(service, artifactId, Constants.SCHEMA);
+        RegistryDemoUtil.createSchemaInServiceRegistry(client, artifactId, Constants.SCHEMA);
 
         //Wait for the artifact to be available.
         Thread.sleep(1000);
 
-        RegistryDemoUtil.getSchemaFromRegistry(service, artifactId);
+        RegistryDemoUtil.getSchemaFromRegistry(client, artifactId);
 
-        RegistryDemoUtil.deleteSchema(service, artifactId);
+        RegistryDemoUtil.deleteSchema(client, artifactId);
 
         //TODO remove with the release of the closeable version of the registry
         System.exit(0);

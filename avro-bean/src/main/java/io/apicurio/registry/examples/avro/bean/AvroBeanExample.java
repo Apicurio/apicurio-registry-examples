@@ -31,43 +31,40 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.utils.serde.AbstractKafkaSerDe;
-import io.apicurio.registry.utils.serde.AbstractKafkaSerializer;
-import io.apicurio.registry.utils.serde.AvroKafkaDeserializer;
-import io.apicurio.registry.utils.serde.AvroKafkaSerializer;
-import io.apicurio.registry.utils.serde.avro.AvroDatumProvider;
-import io.apicurio.registry.utils.serde.avro.ReflectAvroDatumProvider;
-import io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy;
-import io.apicurio.registry.utils.serde.strategy.SimpleTopicIdStrategy;
+import io.apicurio.registry.serde.SerdeConfigKeys;
+import io.apicurio.registry.serde.avro.AvroDatumProvider;
+import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
+import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
+import io.apicurio.registry.serde.avro.ReflectAvroDatumProvider;
 
 /**
  * This example demonstrates how to use the Apicurio Registry in a very simple publish/subscribe
  * scenario with Avro as the serialization type.  The following aspects are demonstrated:
- * 
+ *
  * <ol>
  *   <li>Configuring a Kafka Serializer for use with Apicurio Registry</li>
  *   <li>Configuring a Kafka Deserializer for use with Apicurio Registry</li>
  *   <li>Auto-register the Avro schema in the registry (registered by the producer)</li>
  *   <li>Data sent as a {@link GreetingBean}</li>
  * </ol>
- * 
+ *
  * Pre-requisites:
- * 
+ *
  * <ul>
  *   <li>Kafka must be running on localhost:9092</li>
  *   <li>Apicurio Registry must be running on localhost:8080</li>
  * </ul>
- * 
+ *
  * @author eric.wittmann@gmail.com
  */
 public class AvroBeanExample {
-    
-    private static final String REGISTRY_URL = "http://localhost:8080/api";
+
+    private static final String REGISTRY_URL = "http://localhost:8080/api/v2";
     private static final String SERVERS = "localhost:9092";
     private static final String TOPIC_NAME = AvroBeanExample.class.getSimpleName();
     private static final String SUBJECT_NAME = "Greeting";
 
-    
+
     public static final void main(String [] args) throws Exception {
         System.out.println("Starting example " + AvroBeanExample.class.getSimpleName());
         String topicName = TOPIC_NAME;
@@ -83,12 +80,12 @@ public class AvroBeanExample {
                 GreetingBean greeting = new GreetingBean();
                 greeting.setMessage("Hello (" + producedMessages++ + ")!");
                 greeting.setTime(System.currentTimeMillis());
-                
-                
+
+
                 // Send/produce the message on the Kafka Producer
                 ProducerRecord<Object, Object> producedRecord = new ProducerRecord<>(topicName, subjectName, greeting);
                 producer.send(producedRecord);
-                
+
                 Thread.sleep(100);
             }
             System.out.println("Messages successfully produced.");
@@ -97,7 +94,7 @@ public class AvroBeanExample {
             producer.flush();
             producer.close();
         }
-        
+
         // Create the consumer
         System.out.println("Creating the consumer.");
         KafkaConsumer<Long, GreetingBean> consumer = createKafkaConsumer();
@@ -124,7 +121,7 @@ public class AvroBeanExample {
         } finally {
             consumer.close();
         }
-        
+
         System.out.println("Done (success).");
         System.exit(0);
     }
@@ -144,11 +141,8 @@ public class AvroBeanExample {
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroKafkaSerializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
-        // Map the topic name to the artifactId in the registry
-        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_ARTIFACT_ID_STRATEGY_CONFIG_PARAM, SimpleTopicIdStrategy.class.getName());
-        // Get an existing schema or auto-register if not found
-        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_GLOBAL_ID_STRATEGY_CONFIG_PARAM, GetOrCreateIdStrategy.class.getName());
+        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfigKeys.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
         // Use Java reflection as the Avro Datum Provider - this also generates an Avro schema from the java bean
         props.putIfAbsent(AvroDatumProvider.REGISTRY_AVRO_DATUM_PROVIDER_CONFIG_PARAM, ReflectAvroDatumProvider.class.getName());
 
@@ -174,7 +168,7 @@ public class AvroBeanExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
         // Use Java reflection as the Avro Datum Provider
         props.putIfAbsent(AvroDatumProvider.REGISTRY_AVRO_DATUM_PROVIDER_CONFIG_PARAM, ReflectAvroDatumProvider.class.getName());
         // No other configuration needed for the deserializer, because the globalId of the schema

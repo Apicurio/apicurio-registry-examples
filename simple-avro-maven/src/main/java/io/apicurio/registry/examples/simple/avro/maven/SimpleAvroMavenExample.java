@@ -40,58 +40,56 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.client.RegistryRestClient;
-import io.apicurio.registry.client.RegistryRestClientFactory;
-import io.apicurio.registry.utils.serde.AbstractKafkaSerDe;
-import io.apicurio.registry.utils.serde.AbstractKafkaSerializer;
-import io.apicurio.registry.utils.serde.AvroKafkaDeserializer;
-import io.apicurio.registry.utils.serde.AvroKafkaSerializer;
-import io.apicurio.registry.utils.serde.strategy.GetOrCreateIdStrategy;
-import io.apicurio.registry.utils.serde.strategy.SimpleTopicIdStrategy;
+import io.apicurio.registry.rest.client.RegistryClient;
+import io.apicurio.registry.rest.client.RegistryClientFactory;
+import io.apicurio.registry.rest.v2.beans.IfExists;
+import io.apicurio.registry.serde.SerdeConfigKeys;
+import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
+import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
 
 /**
  * This example demonstrates how to use the Apicurio Registry in a very simple publish/subscribe
- * scenario with Avro as the serialization type and the Schema pre-registered via a Maven plugin.  
+ * scenario with Avro as the serialization type and the Schema pre-registered via a Maven plugin.
  * The following aspects are demonstrated:
- * 
+ *
  * <ol>
  *   <li>Configuring a Kafka Serializer for use with Apicurio Registry</li>
  *   <li>Configuring a Kafka Deserializer for use with Apicurio Registry</li>
  *   <li>Pre-register the Avro schema in the registry via the Maven plugin</li>
  *   <li>Data sent as a simple GenericRecord, no java beans needed</li>
  * </ol>
- * 
+ *
  * Pre-requisites:
- * 
+ *
  * <ul>
  *   <li>Kafka must be running on localhost:9092</li>
  *   <li>Apicurio Registry must be running on localhost:8080</li>
  *   <li>Schema is registered by executing "mvn io.apicurio:apicurio-registry-maven-plugin:register@register-artifact"</li>
  * </ul>
- * 
- * Note that this application will fail if the above maven command is not run first, since 
+ *
+ * Note that this application will fail if the above maven command is not run first, since
  * the schema will not be present in the registry.
- * 
+ *
  * @author eric.wittmann@gmail.com
  */
 public class SimpleAvroMavenExample {
-    
-    private static final String REGISTRY_URL = "http://localhost:8080/api";
+
+    private static final String REGISTRY_URL = "http://localhost:8080/api/v2";
     private static final String SERVERS = "localhost:9092";
     private static final String TOPIC_NAME = SimpleAvroMavenExample.class.getSimpleName();
     private static final String SUBJECT_NAME = "Greeting";
 
-    
+
     public static final void main(String [] args) throws Exception {
         System.out.println("Starting example " + SimpleAvroMavenExample.class.getSimpleName());
         String topicName = TOPIC_NAME;
         String subjectName = SUBJECT_NAME;
-        String artifactId = topicName;
-        
+        String artifactId = topicName + "-value";
+
         // Get the schema from the registry so we can use it to create GenericData.Records later
-        RegistryRestClient client = RegistryRestClientFactory.create(REGISTRY_URL);
+        RegistryClient client = RegistryClientFactory.create(REGISTRY_URL);
         String schemaData = null;
-        try (InputStream latestArtifact = client.getLatestArtifact(artifactId)) {
+        try (InputStream latestArtifact = client.getLatestArtifact("default", artifactId)) {
             schemaData = toString(latestArtifact);
         } catch (WebApplicationException e) {
             if (e.getResponse().getStatus() == 404) {
@@ -115,11 +113,11 @@ public class SimpleAvroMavenExample {
                 String message = "Hello (" + producedMessages++ + ")!";
                 record.put("Message", message);
                 record.put("Time", now.getTime());
-                
+
                 // Send/produce the message on the Kafka Producer
                 ProducerRecord<Object, Object> producedRecord = new ProducerRecord<>(topicName, subjectName, record);
                 producer.send(producedRecord);
-                
+
                 Thread.sleep(100);
             }
             System.out.println("Messages successfully produced.");
@@ -128,7 +126,7 @@ public class SimpleAvroMavenExample {
             producer.flush();
             producer.close();
         }
-        
+
         // Create the consumer
         System.out.println("Creating the consumer.");
         KafkaConsumer<Long, GenericRecord> consumer = createKafkaConsumer();
@@ -155,7 +153,7 @@ public class SimpleAvroMavenExample {
         } finally {
             consumer.close();
         }
-        
+
         System.out.println("Done (success).");
         System.exit(0);
     }
@@ -175,11 +173,10 @@ public class SimpleAvroMavenExample {
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroKafkaSerializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
-        // Map the topic name to the artifactId in the registry
-        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_ARTIFACT_ID_STRATEGY_CONFIG_PARAM, SimpleTopicIdStrategy.class.getName());
-        // Get an existing schema or auto-register if not found
-        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_GLOBAL_ID_STRATEGY_CONFIG_PARAM, GetOrCreateIdStrategy.class.getName());
+        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        // Get an existing schema - do not auto-register the schema if not found.
+        props.putIfAbsent(SerdeConfigKeys.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
+        props.putIfAbsent(SerdeConfigKeys.AUTO_REGISTER_ARTIFACT_BEHAVIOR, IfExists.RETURN);
 
         // Create the Kafka producer
         Producer<Object, Object> producer = new KafkaProducer<>(props);
@@ -203,7 +200,7 @@ public class SimpleAvroMavenExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.

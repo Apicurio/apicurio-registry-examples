@@ -34,8 +34,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.utils.serde.AbstractKafkaSerDe;
-import io.apicurio.registry.utils.serde.AvroKafkaDeserializer;
+import io.apicurio.registry.serde.SerdeConfigKeys;
+import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 
 /**
@@ -43,32 +43,34 @@ import io.confluent.kafka.serializers.KafkaAvroSerializer;
  * scenario where applications use a mix of Confluent and Apicurio Registry serdes classes.  This
  * example uses the Confluent serializer for the producer and the Apicurio Registry deserializer
  * class for the consumer.
- * 
+ *
  * <ol>
  *   <li>Configuring a Confluent Kafka Serializer for use with Apicurio Registry</li>
  *   <li>Configuring a Kafka Deserializer for use with Apicurio Registry</li>
  *   <li>Auto-register the Avro schema in the registry (registered by the producer)</li>
  *   <li>Data sent as a simple GenericRecord, no java beans needed</li>
  * </ol>
- * 
+ *
  * Pre-requisites:
- * 
+ *
  * <ul>
  *   <li>Kafka must be running on localhost:9092</li>
  *   <li>Apicurio Registry must be running on localhost:8080</li>
  * </ul>
- * 
+ *
  * @author eric.wittmann@gmail.com
  */
 public class ConfluentSerdesExample {
-    
-    private static final String REGISTRY_URL = "http://localhost:8080/api";
+
+    private static final String REGISTRY_URL = "http://localhost:8080/api/v2";
+    private static final String CCOMPAT_API_URL = "http://localhost:8080/api/ccompat";
+
     private static final String SERVERS = "localhost:9092";
     private static final String TOPIC_NAME = ConfluentSerdesExample.class.getSimpleName();
     private static final String SUBJECT_NAME = "Greeting";
     private static final String SCHEMA = "{\"type\":\"record\",\"name\":\"Greeting\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Time\",\"type\":\"long\"}]}";
 
-    
+
     public static final void main(String [] args) throws Exception {
         System.out.println("Starting example " + ConfluentSerdesExample.class.getSimpleName());
         String topicName = TOPIC_NAME;
@@ -88,11 +90,11 @@ public class ConfluentSerdesExample {
                 String message = "Hello (" + producedMessages++ + ")!";
                 record.put("Message", message);
                 record.put("Time", now.getTime());
-                
+
                 // Send/produce the message on the Kafka Producer
                 ProducerRecord<Object, Object> producedRecord = new ProducerRecord<>(topicName, subjectName, record);
                 producer.send(producedRecord);
-                
+
                 Thread.sleep(100);
             }
             System.out.println("Messages successfully produced.");
@@ -101,7 +103,7 @@ public class ConfluentSerdesExample {
             producer.flush();
             producer.close();
         }
-        
+
         // Create the consumer
         System.out.println("Creating the consumer.");
         KafkaConsumer<Long, GenericRecord> consumer = createKafkaConsumer();
@@ -128,7 +130,7 @@ public class ConfluentSerdesExample {
         } finally {
             consumer.close();
         }
-        
+
         System.out.println("Done (success).");
         System.exit(0);
     }
@@ -147,7 +149,7 @@ public class ConfluentSerdesExample {
         // Use the Confluent provided Kafka Serializer for Avro
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
         // Configure Service Registry location (Confluent API)
-        props.put("schema.registry.url", REGISTRY_URL + "/ccompat");
+        props.put("schema.registry.url", CCOMPAT_API_URL);
         props.put("auto.register.schemas", "true");
         // Map the topic name to the artifactId in the registry
         props.put("value.subject.name.strategy", "io.confluent.kafka.serializers.subject.TopicRecordNameStrategy");
@@ -174,9 +176,9 @@ public class ConfluentSerdesExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
         // Enable "Confluent Compatible API" mode in the Apicurio Registry deserializer
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_CONFLUENT_ID_HANDLER_CONFIG_PARAM, "true");
+        props.putIfAbsent(SerdeConfigKeys.ENABLE_CONFLUENT_ID_HANDLER, Boolean.TRUE);
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.

@@ -33,79 +33,75 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.client.RegistryRestClient;
-import io.apicurio.registry.client.RegistryRestClientFactory;
-import io.apicurio.registry.rest.beans.IfExistsType;
+import io.apicurio.registry.rest.client.RegistryClient;
+import io.apicurio.registry.rest.client.RegistryClientFactory;
+import io.apicurio.registry.rest.v2.beans.IfExists;
+import io.apicurio.registry.serde.SerdeConfigKeys;
+import io.apicurio.registry.serde.jsonschema.JsonSchemaKafkaDeserializer;
+import io.apicurio.registry.serde.jsonschema.JsonSchemaKafkaSerializer;
 import io.apicurio.registry.types.ArtifactType;
-import io.apicurio.registry.utils.serde.AbstractKafkaSerDe;
-import io.apicurio.registry.utils.serde.AbstractKafkaSerializer;
-import io.apicurio.registry.utils.serde.JsonSchemaKafkaDeserializer;
-import io.apicurio.registry.utils.serde.JsonSchemaKafkaSerializer;
-import io.apicurio.registry.utils.serde.JsonSchemaSerDeConstants;
-import io.apicurio.registry.utils.serde.strategy.FindLatestIdStrategy;
-import io.apicurio.registry.utils.serde.strategy.SimpleTopicIdStrategy;
 
 /**
  * This example demonstrates how to use the Apicurio Registry in a very simple publish/subscribe
  * scenario with JSON as the serialization type (and JSON Schema for validation).  Because JSON
  * Schema is only used for validation (not actual serialization), it can be enabled and disabled
- * without affecting the functionality of the serializers and deserializers.  However, if 
+ * without affecting the functionality of the serializers and deserializers.  However, if
  * validation is disabled, then incorrect data could be consumed incorrectly.
- * 
+ *
  * The following aspects are demonstrated:
- * 
+ *
  * <ol>
  *   <li>Register the JSON Schema in the registry</li>
  *   <li>Configuring a Kafka Serializer for use with Apicurio Registry</li>
  *   <li>Configuring a Kafka Deserializer for use with Apicurio Registry</li>
  *   <li>Data sent as a MessageBean</li>
  * </ol>
- * 
+ *
  * Pre-requisites:
- * 
+ *
  * <ul>
  *   <li>Kafka must be running on localhost:9092</li>
  *   <li>Apicurio Registry must be running on localhost:8080</li>
  * </ul>
- * 
+ *
  * @author eric.wittmann@gmail.com
  */
 public class SimpleJsonSchemaExample {
-    
-    private static final String REGISTRY_URL = "http://localhost:8080/api";
+
+    private static final String REGISTRY_URL = "http://localhost:8080/api/v2";
     private static final String SERVERS = "localhost:9092";
     private static final String TOPIC_NAME = SimpleJsonSchemaExample.class.getSimpleName();
     private static final String SUBJECT_NAME = "Greeting";
     public static final String SCHEMA = "{" +
-            "    \"$id\": \"https://example.com/message.schema.json\"," + 
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"," + 
-            "    \"required\": [" + 
-            "        \"message\"," + 
-            "        \"time\"" + 
-            "    ]," + 
-            "    \"type\": \"object\"," + 
-            "    \"properties\": {" + 
-            "        \"message\": {" + 
-            "            \"description\": \"\"," + 
-            "            \"type\": \"string\"" + 
-            "        }," + 
-            "        \"time\": {" + 
-            "            \"description\": \"\"," + 
-            "            \"type\": \"number\"" + 
-            "        }" + 
-            "    }" + 
+            "    \"$id\": \"https://example.com/message.schema.json\"," +
+            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"," +
+            "    \"required\": [" +
+            "        \"message\"," +
+            "        \"time\"" +
+            "    ]," +
+            "    \"type\": \"object\"," +
+            "    \"properties\": {" +
+            "        \"message\": {" +
+            "            \"description\": \"\"," +
+            "            \"type\": \"string\"" +
+            "        }," +
+            "        \"time\": {" +
+            "            \"description\": \"\"," +
+            "            \"type\": \"number\"" +
+            "        }" +
+            "    }" +
             "}";
 
-    
+
     public static final void main(String [] args) throws Exception {
         System.out.println("Starting example " + SimpleJsonSchemaExample.class.getSimpleName());
         String topicName = TOPIC_NAME;
         String subjectName = SUBJECT_NAME;
-        
+
         // Register the schema with the registry (only if it is not already registered)
-        String artifactId = TOPIC_NAME; // use the topic name as the artifactId because we're going to map topic name to artifactId later on (using SimpleTopicIdStrategy in the producer config)
-        RegistryRestClient client = RegistryRestClientFactory.create(REGISTRY_URL);
-        client.createArtifact(artifactId, ArtifactType.JSON, IfExistsType.RETURN_OR_UPDATE, new ByteArrayInputStream(SCHEMA.getBytes(StandardCharsets.UTF_8)));
+        String artifactId = TOPIC_NAME + "-value"; // use the topic name as the artifactId because we're going to map topic name to artifactId later on.
+        RegistryClient client = RegistryClientFactory.create(REGISTRY_URL);
+        client.createArtifact("default", artifactId, ArtifactType.JSON, IfExists.RETURN_OR_UPDATE, new ByteArrayInputStream(SCHEMA.getBytes(StandardCharsets.UTF_8)));
 
         // Create the producer.
         Producer<Object, Object> producer = createKafkaProducer();
@@ -118,11 +114,11 @@ public class SimpleJsonSchemaExample {
                 MessageBean message = new MessageBean();
                 message.setMessage("Hello (" + producedMessages++ + ")!");
                 message.setTime(System.currentTimeMillis());
-                
+
                 // Send/produce the message on the Kafka Producer
                 ProducerRecord<Object, Object> producedRecord = new ProducerRecord<>(topicName, subjectName, message);
                 producer.send(producedRecord);
-                
+
                 Thread.sleep(100);
             }
             System.out.println("Messages successfully produced.");
@@ -131,7 +127,7 @@ public class SimpleJsonSchemaExample {
             producer.flush();
             producer.close();
         }
-        
+
         // Create the consumer
         System.out.println("Creating the consumer.");
         KafkaConsumer<Long, MessageBean> consumer = createKafkaConsumer();
@@ -158,7 +154,7 @@ public class SimpleJsonSchemaExample {
         } finally {
             consumer.close();
         }
-        
+
         System.out.println("Done (success).");
         System.exit(0);
     }
@@ -178,13 +174,10 @@ public class SimpleJsonSchemaExample {
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSchemaKafkaSerializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
-        // Map the topic name to the artifactId in the registry
-        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_ARTIFACT_ID_STRATEGY_CONFIG_PARAM, SimpleTopicIdStrategy.class.getName());
-        // Use the schema registered in step 1
-        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_GLOBAL_ID_STRATEGY_CONFIG_PARAM, FindLatestIdStrategy.class.getName());
-        // Enable validation in the serializer to ensure that the data we send is valid against the schema.
-        props.putIfAbsent(JsonSchemaSerDeConstants.REGISTRY_JSON_SCHEMA_VALIDATION_ENABLED, Boolean.TRUE);
+        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfigKeys.AUTO_REGISTER_ARTIFACT, Boolean.FALSE);
+        props.putIfAbsent(SerdeConfigKeys.ARTIFACT_GROUP_ID, "default");
+        props.putIfAbsent(SerdeConfigKeys.VALIDATION_ENABLED, Boolean.TRUE);
 
         // Create the Kafka producer
         Producer<Object, Object> producer = new KafkaProducer<>(props);
@@ -206,11 +199,12 @@ public class SimpleJsonSchemaExample {
         props.putIfAbsent(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         // Use the Apicurio Registry provided Kafka Deserializer for JSON Schema
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonSchemaKafkaDeserializer.class.getName());
-        // Enable validation in the deserializer to ensure that the data we receive is valid.
-        props.putIfAbsent(JsonSchemaSerDeConstants.REGISTRY_JSON_SCHEMA_VALIDATION_ENABLED, Boolean.TRUE);
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        // Enable validation in the deserializer to ensure that the data we receive is valid.
+        props.putIfAbsent(SerdeConfigKeys.VALIDATION_ENABLED, Boolean.TRUE);
+
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.
