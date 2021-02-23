@@ -65,7 +65,7 @@ import io.apicurio.registry.serde.avro.strategy.RecordIdStrategy;
  */
 public class MixAvroExample {
 
-    private static final String REGISTRY_URL = "http://localhost:8080/api/v2";
+    private static final String REGISTRY_URL = "http://localhost:8080/apis/registry/v2";
     private static final String SERVERS = "localhost:9092";
     private static final String TOPIC_NAME = MixAvroExample.class.getSimpleName();
     private static final String SCHEMAV1 = "{\"type\":\"record\",\"name\":\"Greeting\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Time\",\"type\":\"long\"}]}";

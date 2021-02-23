@@ -61,7 +61,7 @@ import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
  */
 public class SimpleAvroExample {
 
-    private static final String REGISTRY_URL = "http://localhost:8080/api/v2";
+    private static final String REGISTRY_URL = "http://localhost:8080/apis/registry/v2";
     private static final String SERVERS = "localhost:9092";
     private static final String TOPIC_NAME = SimpleAvroExample.class.getSimpleName();
     private static final String SUBJECT_NAME = "Greeting";
