@@ -35,15 +35,13 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.utils.serde.AbstractKafkaSerDe;
-import io.apicurio.registry.utils.serde.AbstractKafkaSerializer;
-import io.apicurio.registry.utils.serde.AvroKafkaDeserializer;
-import io.apicurio.registry.utils.serde.AvroKafkaSerializer;
-import io.apicurio.registry.utils.serde.strategy.CachedSchemaIdStrategy;
-import io.apicurio.registry.utils.serde.strategy.RecordIdStrategy;
+import io.apicurio.registry.serde.SerdeConfig;
+import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
+import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
+import io.apicurio.registry.serde.avro.strategy.RecordIdStrategy;
 
 /**
- * This example application showcases an scenario where Apache Avro messages are published to the same
+ * This example application showcases a scenario where Apache Avro messages are published to the same
  * Kafka topic using different Avro schemas. This example uses the Apicurio Registry serdes classes to serialize
  * and deserialize Apache Avro messages using different schemas, even if received in the same Kafka topic.
  * The following aspects are demonstrated:
@@ -67,7 +65,7 @@ import io.apicurio.registry.utils.serde.strategy.RecordIdStrategy;
  */
 public class MixAvroExample {
 
-    private static final String REGISTRY_URL = "http://localhost:8080/api";
+    private static final String REGISTRY_URL = "http://localhost:8080/apis/registry/v2";
     private static final String SERVERS = "localhost:9092";
     private static final String TOPIC_NAME = MixAvroExample.class.getSimpleName();
     private static final String SCHEMAV1 = "{\"type\":\"record\",\"name\":\"Greeting\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Time\",\"type\":\"long\"}]}";
@@ -132,7 +130,6 @@ public class MixAvroExample {
         }
 
         System.out.println("Done (success).");
-        System.exit(0);
     }
 
     private static int produceMessages(Producer<Object, Object> producer, String topicName, String schemaContent, String extra) throws InterruptedException {
@@ -175,11 +172,12 @@ public class MixAvroExample {
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroKafkaSerializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.EXPLICIT_ARTIFACT_GROUP_ID, MixAvroExample.class.getSimpleName());
         // Map the topic name to the artifactId in the registry
-        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_ARTIFACT_ID_STRATEGY_CONFIG_PARAM, RecordIdStrategy.class.getName());
+        props.putIfAbsent(SerdeConfig.ARTIFACT_RESOLVER_STRATEGY, RecordIdStrategy.class.getName());
         // Get an existing schema or auto-register if not found
-        props.putIfAbsent(AbstractKafkaSerializer.REGISTRY_GLOBAL_ID_STRATEGY_CONFIG_PARAM, CachedSchemaIdStrategy.class.getName());
+        props.putIfAbsent(SerdeConfig.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
 
         // Create the Kafka producer
         Producer<Object, Object> producer = new KafkaProducer<>(props);
@@ -203,7 +201,7 @@ public class MixAvroExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(AbstractKafkaSerDe.REGISTRY_URL_CONFIG_PARAM, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.

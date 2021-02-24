@@ -1,17 +1,9 @@
 package io.apicurio.registry.examples;
 
-import io.apicurio.registry.client.RegistryRestClient;
-import io.apicurio.registry.client.RegistryRestClientFactory;
 import io.apicurio.registry.examples.util.RegistryDemoUtil;
-import okhttp3.Headers;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.apicurio.registry.rest.client.RegistryClient;
+import io.apicurio.registry.rest.client.RegistryClientFactory;
 
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -25,19 +17,19 @@ import java.util.UUID;
  */
 public class HeadersLoggingDemo {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HeadersLoggingDemo.class);
+//    private static final Logger LOGGER = LoggerFactory.getLogger(HeadersLoggingDemo.class);
 
-    private static final RegistryRestClient service;
+    private static final RegistryClient client;
 
     static {
         // Create a Service Registry client
         final String registryUrl = "http://localhost:8080/api/";
 
-        final OkHttpClient httpClient = new OkHttpClient.Builder()
-                .addInterceptor(new HeadersInterceptor())
-                .build();
+//        final OkHttpClient httpClient = new OkHttpClient.Builder()
+//                .addInterceptor(new HeadersInterceptor())
+//                .build();
 
-        service = RegistryRestClientFactory.create(registryUrl, httpClient);
+        client = RegistryClientFactory.create(registryUrl);
     }
 
     public static void main(String[] args) throws Exception {
@@ -45,39 +37,36 @@ public class HeadersLoggingDemo {
         // Register the JSON Schema schema in the Apicurio registry.
         final String artifactId = UUID.randomUUID().toString();
 
-        RegistryDemoUtil.createSchemaInServiceRegistry(service, artifactId, Constants.SCHEMA);
+        RegistryDemoUtil.createSchemaInServiceRegistry(client, artifactId, Constants.SCHEMA);
 
         //Wait for the artifact to be available.
         Thread.sleep(1000);
 
-        RegistryDemoUtil.getSchemaFromRegistry(service, artifactId);
+        RegistryDemoUtil.getSchemaFromRegistry(client, artifactId);
 
-        RegistryDemoUtil.deleteSchema(service, artifactId);
-
-        //TODO remove with the release of the closeable version of the registry
-        System.exit(0);
+        RegistryDemoUtil.deleteSchema(client, artifactId);
     }
-
-    private static final class HeadersInterceptor implements Interceptor {
-
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-
-            final Request request = chain.request();
-            final Headers requestHeaders = request.headers();
-
-            for (String name : requestHeaders.names()) {
-                LOGGER.info("Request header with name: {} and value: {}", name, requestHeaders.get(name));
-            }
-
-            final Response response = chain.proceed(request);
-            final Headers responseHeaders = response.headers();
-
-            for (String name : responseHeaders.names()) {
-                LOGGER.info("Response header with name: {} and value: {}", name, responseHeaders.get(name));
-            }
-
-            return response;
-        }
-    }
+//
+//    private static final class HeadersInterceptor implements Interceptor {
+//
+//        @Override
+//        public Response intercept(Chain chain) throws IOException {
+//
+//            final Request request = chain.request();
+//            final Headers requestHeaders = request.headers();
+//
+//            for (String name : requestHeaders.names()) {
+//                LOGGER.info("Request header with name: {} and value: {}", name, requestHeaders.get(name));
+//            }
+//
+//            final Response response = chain.proceed(request);
+//            final Headers responseHeaders = response.headers();
+//
+//            for (String name : responseHeaders.names()) {
+//                LOGGER.info("Response header with name: {} and value: {}", name, responseHeaders.get(name));
+//            }
+//
+//            return response;
+//        }
+//    }
 }
