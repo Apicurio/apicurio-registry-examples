@@ -36,7 +36,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import io.apicurio.registry.rest.client.RegistryClient;
 import io.apicurio.registry.rest.client.RegistryClientFactory;
 import io.apicurio.registry.rest.v2.beans.IfExists;
-import io.apicurio.registry.serde.SerdeConfigKeys;
+import io.apicurio.registry.serde.SerdeConfig;
 import io.apicurio.registry.serde.jsonschema.JsonSchemaKafkaDeserializer;
 import io.apicurio.registry.serde.jsonschema.JsonSchemaKafkaSerializer;
 import io.apicurio.registry.types.ArtifactType;
@@ -156,7 +156,6 @@ public class SimpleJsonSchemaExample {
         }
 
         System.out.println("Done (success).");
-        System.exit(0);
     }
 
     /**
@@ -174,10 +173,10 @@ public class SimpleJsonSchemaExample {
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSchemaKafkaSerializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
-        props.putIfAbsent(SerdeConfigKeys.AUTO_REGISTER_ARTIFACT, Boolean.FALSE);
-        props.putIfAbsent(SerdeConfigKeys.ARTIFACT_GROUP_ID, "default");
-        props.putIfAbsent(SerdeConfigKeys.VALIDATION_ENABLED, Boolean.TRUE);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.AUTO_REGISTER_ARTIFACT, Boolean.FALSE);
+        props.putIfAbsent(SerdeConfig.EXPLICIT_ARTIFACT_GROUP_ID, "default");
+        props.putIfAbsent(SerdeConfig.VALIDATION_ENABLED, Boolean.TRUE);
 
         // Create the Kafka producer
         Producer<Object, Object> producer = new KafkaProducer<>(props);
@@ -201,9 +200,9 @@ public class SimpleJsonSchemaExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonSchemaKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
         // Enable validation in the deserializer to ensure that the data we receive is valid.
-        props.putIfAbsent(SerdeConfigKeys.VALIDATION_ENABLED, Boolean.TRUE);
+        props.putIfAbsent(SerdeConfig.VALIDATION_ENABLED, Boolean.TRUE);
 
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply

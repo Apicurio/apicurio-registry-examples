@@ -27,7 +27,6 @@ public class SimpleRegistryDemo {
     }
 
     public static void main(String[] args) throws Exception {
-
         // Register the JSON Schema schema in the Apicurio registry.
         final String artifactId = UUID.randomUUID().toString();
 
@@ -39,8 +38,5 @@ public class SimpleRegistryDemo {
         RegistryDemoUtil.getSchemaFromRegistry(client, artifactId);
 
         RegistryDemoUtil.deleteSchema(client, artifactId);
-
-        //TODO remove with the release of the closeable version of the registry
-        System.exit(0);
     }
 }

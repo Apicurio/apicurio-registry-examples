@@ -34,7 +34,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.serde.SerdeConfigKeys;
+import io.apicurio.registry.serde.SerdeConfig;
 import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
 import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
 
@@ -122,7 +122,6 @@ public class CustomSchemaResolverExample {
         }
 
         System.out.println("Done (success).");
-        System.exit(0);
     }
 
     /**
@@ -140,9 +139,9 @@ public class CustomSchemaResolverExample {
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroKafkaSerializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, Config.REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, Config.REGISTRY_URL);
         // Use our custom resolver here.
-        props.putIfAbsent(SerdeConfigKeys.SCHEMA_RESOLVER, CustomSchemaResolver.class.getName());
+        props.putIfAbsent(SerdeConfig.SCHEMA_RESOLVER, CustomSchemaResolver.class.getName());
 
         // Create the Kafka producer
         Producer<Object, Object> producer = new KafkaProducer<>(props);
@@ -166,7 +165,7 @@ public class CustomSchemaResolverExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, Config.REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, Config.REGISTRY_URL);
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.

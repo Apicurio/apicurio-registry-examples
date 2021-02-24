@@ -31,9 +31,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.serde.SerdeConfigKeys;
-import io.apicurio.registry.serde.avro.AvroDatumProvider;
+import io.apicurio.registry.serde.SerdeConfig;
 import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
+import io.apicurio.registry.serde.avro.AvroKafkaSerdeConfig;
 import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
 import io.apicurio.registry.serde.avro.ReflectAvroDatumProvider;
 
@@ -123,7 +123,6 @@ public class AvroBeanExample {
         }
 
         System.out.println("Done (success).");
-        System.exit(0);
     }
 
     /**
@@ -141,10 +140,10 @@ public class AvroBeanExample {
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroKafkaSerializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
-        props.putIfAbsent(SerdeConfigKeys.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
         // Use Java reflection as the Avro Datum Provider - this also generates an Avro schema from the java bean
-        props.putIfAbsent(AvroDatumProvider.REGISTRY_AVRO_DATUM_PROVIDER_CONFIG_PARAM, ReflectAvroDatumProvider.class.getName());
+        props.putIfAbsent(AvroKafkaSerdeConfig.AVRO_DATUM_PROVIDER, ReflectAvroDatumProvider.class.getName());
 
         // Create the Kafka producer
         Producer<Object, Object> producer = new KafkaProducer<>(props);
@@ -168,9 +167,9 @@ public class AvroBeanExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
         // Use Java reflection as the Avro Datum Provider
-        props.putIfAbsent(AvroDatumProvider.REGISTRY_AVRO_DATUM_PROVIDER_CONFIG_PARAM, ReflectAvroDatumProvider.class.getName());
+        props.putIfAbsent(AvroKafkaSerdeConfig.AVRO_DATUM_PROVIDER, ReflectAvroDatumProvider.class.getName());
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.

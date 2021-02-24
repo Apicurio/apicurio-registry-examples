@@ -43,7 +43,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import io.apicurio.registry.rest.client.RegistryClient;
 import io.apicurio.registry.rest.client.RegistryClientFactory;
 import io.apicurio.registry.rest.v2.beans.IfExists;
-import io.apicurio.registry.serde.SerdeConfigKeys;
+import io.apicurio.registry.serde.SerdeConfig;
 import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
 import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
 
@@ -155,7 +155,6 @@ public class SimpleAvroMavenExample {
         }
 
         System.out.println("Done (success).");
-        System.exit(0);
     }
 
     /**
@@ -173,10 +172,10 @@ public class SimpleAvroMavenExample {
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroKafkaSerializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
         // Get an existing schema - do not auto-register the schema if not found.
-        props.putIfAbsent(SerdeConfigKeys.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
-        props.putIfAbsent(SerdeConfigKeys.AUTO_REGISTER_ARTIFACT_BEHAVIOR, IfExists.RETURN);
+        props.putIfAbsent(SerdeConfig.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
+        props.putIfAbsent(SerdeConfig.AUTO_REGISTER_ARTIFACT_IF_EXISTS, IfExists.RETURN.name());
 
         // Create the Kafka producer
         Producer<Object, Object> producer = new KafkaProducer<>(props);
@@ -200,7 +199,7 @@ public class SimpleAvroMavenExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.

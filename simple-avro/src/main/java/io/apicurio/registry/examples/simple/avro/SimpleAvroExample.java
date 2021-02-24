@@ -34,8 +34,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.rest.v2.beans.IfExists;
-import io.apicurio.registry.serde.SerdeConfigKeys;
+import io.apicurio.registry.serde.SerdeConfig;
 import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
 import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
 
@@ -129,7 +128,6 @@ public class SimpleAvroExample {
         }
 
         System.out.println("Done (success).");
-        System.exit(0);
     }
 
     /**
@@ -147,10 +145,9 @@ public class SimpleAvroExample {
         props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroKafkaSerializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
         // Register the artifact if not found in the registry.
-        props.putIfAbsent(SerdeConfigKeys.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
-        props.putIfAbsent(SerdeConfigKeys.AUTO_REGISTER_ARTIFACT_BEHAVIOR, IfExists.RETURN_OR_UPDATE);
+        props.putIfAbsent(SerdeConfig.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
 
         // Create the Kafka producer
         Producer<Object, Object> producer = new KafkaProducer<>(props);
@@ -174,7 +171,7 @@ public class SimpleAvroExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.

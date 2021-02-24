@@ -34,7 +34,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.serde.SerdeConfigKeys;
+import io.apicurio.registry.serde.SerdeConfig;
 import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 
@@ -132,7 +132,6 @@ public class ConfluentSerdesExample {
         }
 
         System.out.println("Done (success).");
-        System.exit(0);
     }
 
     /**
@@ -176,9 +175,9 @@ public class ConfluentSerdesExample {
         props.putIfAbsent(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, AvroKafkaDeserializer.class.getName());
 
         // Configure Service Registry location
-        props.putIfAbsent(SerdeConfigKeys.REGISTRY_URL, REGISTRY_URL);
+        props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
         // Enable "Confluent Compatible API" mode in the Apicurio Registry deserializer
-        props.putIfAbsent(SerdeConfigKeys.ENABLE_CONFLUENT_ID_HANDLER, Boolean.TRUE);
+        props.putIfAbsent(SerdeConfig.ENABLE_CONFLUENT_ID_HANDLER, Boolean.TRUE);
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.
