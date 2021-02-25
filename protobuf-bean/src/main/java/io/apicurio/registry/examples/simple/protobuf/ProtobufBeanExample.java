@@ -74,7 +74,7 @@ public class ProtobufBeanExample {
 
         // Create the producer.
         Producer<Object, AddressBook> producer = createKafkaProducer();
-        // Produce 5 messages.
+        // Produce 2 messages.
         try {
             System.out.println("Producing (2) messages.");
             for (int idx = 0; idx < 2; idx++) {
@@ -113,7 +113,7 @@ public class ProtobufBeanExample {
         System.out.println("Subscribing to topic " + topicName);
         consumer.subscribe(Collections.singletonList(topicName));
 
-        // Consume the 5 messages.
+        // Consume the 2 messages.
         try {
             int messageCount = 0;
             System.out.println("Consuming (2) messages.");
@@ -184,7 +184,6 @@ public class ProtobufBeanExample {
 
         // Configure Service Registry location
         props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
-        props.putIfAbsent(SerdeConfig.EXPLICIT_ARTIFACT_GROUP_ID, "default");
         // No other configuration needed for the deserializer, because the globalId of the schema
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.

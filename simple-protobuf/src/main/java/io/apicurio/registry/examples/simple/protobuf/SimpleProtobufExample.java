@@ -76,7 +76,7 @@ public class SimpleProtobufExample {
 
         // Create the producer.
         Producer<Object, Object> producer = createKafkaProducer();
-        // Produce 5 messages.
+        // Produce 2 messages.
         try {
             System.out.println("Producing (2) messages.");
             for (int idx = 0; idx < 2; idx++) {
@@ -115,7 +115,7 @@ public class SimpleProtobufExample {
         System.out.println("Subscribing to topic " + topicName);
         consumer.subscribe(Collections.singletonList(topicName));
 
-        // Consume the 5 messages.
+        // Consume the 2 messages.
         try {
             int messageCount = 0;
             System.out.println("Consuming (2) messages.");
@@ -186,9 +186,8 @@ public class SimpleProtobufExample {
 
         // Configure Service Registry location
         props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
-        props.putIfAbsent(SerdeConfig.EXPLICIT_ARTIFACT_GROUP_ID, "default");
 
-        //this configuration property forces the deserializer tu return the generic DynamicMessage
+        //this configuration property forces the deserializer to return the generic DynamicMessage
         props.putIfAbsent(SerdeConfig.DESERIALIZER_SPECIFIC_VALUE_RETURN_CLASS, DynamicMessage.class.getName());
 
         // No other configuration needed for the deserializer, because the globalId of the schema
