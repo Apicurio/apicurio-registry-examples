@@ -19,7 +19,6 @@ package io.apicurio.registry.examples.custom.resolver;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.avro.Schema;
@@ -37,7 +36,8 @@ import io.apicurio.registry.types.ArtifactType;
 
 /**
  * A custom schema resolve that simply uses the Avro schema found in the {@link Config}
- * class - and ensures that the schema exists in the registry.
+ * class - and ensures that the schema exists in the registry (so that the deserializer
+ * is guaranteed to be able to retrieve the exact schema used).
  * @author eric.wittmann@gmail.com
  */
 public class CustomSchemaResolver<D> extends AbstractSchemaResolver<Schema, D> {
@@ -53,11 +53,11 @@ public class CustomSchemaResolver<D> extends AbstractSchemaResolver<Schema, D> {
     }
 
     /**
-     * @see io.apicurio.registry.serde.SchemaResolver#resolveSchema(java.lang.String, org.apache.kafka.common.header.Headers, java.lang.Object, java.util.Optional)
+     * @see io.apicurio.registry.serde.SchemaResolver#resolveSchema(java.lang.String, org.apache.kafka.common.header.Headers, java.lang.Object, io.apicurio.registry.serde.ParsedSchema)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public SchemaLookupResult<Schema> resolveSchema(String topic, Headers headers, D data, Optional<ParsedSchema<Schema>> parsedSchema) {
+    public SchemaLookupResult<Schema> resolveSchema(String topic, Headers headers, D data, ParsedSchema<Schema> parsedSchema) {
         System.out.println("[CustomSchemaResolver] Resolving a schema for topic: " + topic);
         String schema = Config.SCHEMA;
 
@@ -71,7 +71,6 @@ public class CustomSchemaResolver<D> extends AbstractSchemaResolver<Schema, D> {
             ArtifactMetaData metaData = client.createArtifact(groupId, artifactId, ArtifactType.AVRO, IfExists.RETURN_OR_UPDATE, schemaContent);
             // Note, we could be caching the globalId here rather than hit the registry every time.
 
-            @SuppressWarnings("rawtypes")
             SchemaLookupResult result = SchemaLookupResult.builder()
                     .groupId(groupId)
                     .artifactId(artifactId)
