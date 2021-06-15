@@ -55,7 +55,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         
         <!-- Apicurio Registry Version -->
-        <apicurio-registry.version>2.0.0.Final</apicurio-registry.version>
+        <apicurio-registry.version>2.1.0-SNAPSHOT</apicurio-registry.version>
 
         <!-- Kafka -->
         <kafka.version>2.5.0</kafka.version>
@@ -68,6 +68,9 @@
 
         <!-- Slf4j -->
         <slf4j.version>1.7.25</slf4j.version>
+
+        <!-- Vert.x version -->
+        <vertx.version>3.9.5</vertx.version>
 
         <!-- Plugin Versions -->
         <version.compiler.plugin>3.8.1</version.compiler.plugin>
