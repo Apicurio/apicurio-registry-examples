@@ -1,0 +1,40 @@
+quarkus:
+  http:
+    port: 8082
+
+apicurio:
+  registry:
+    url: http://localhost:8181/apis/registry/v2
+
+kafka:
+  bootstrap:
+    servers: localhost:9092
+
+mp:
+  messaging:
+    outgoing:
+      events:
+        connector: smallrye-kafka
+        topic: events
+        key:
+          serializer: org.apache.kafka.common.serialization.StringSerializer
+        value:
+          serializer: io.apicurio.registry.serde.avro.AvroKafkaSerializer
+        apicurio:
+          registry:
+            url: ${apicurio.registry.url}
+            artifact-resolver-strategy: io.apicurio.registry.serde.avro.strategy.RecordIdStrategy
+            # auto-register: true
+            find-latest: true
+    incoming:
+      events-sink:
+        connector: smallrye-kafka
+        topic: events
+        key:
+          deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value:
+          deserializer: io.apicurio.registry.serde.avro.AvroKafkaDeserializer
+        apicurio:
+          registry:
+            url: ${apicurio.registry.url}
+            use-specific-avro-reader: true
