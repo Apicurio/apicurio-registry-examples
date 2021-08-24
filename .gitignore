@@ -2,6 +2,7 @@ target/
 .project
 .classpath
 .settings/
+.vscode/
 
 *.iml
 

@@ -41,7 +41,7 @@
         <module>avro-bean</module>
         <module>custom-resolver</module>
         <module>simple-avro-maven</module>
-        <module>rest-client</module>
+        <!-- <module>rest-client</module> -->
         <module>mix-avro</module>
     </modules>
 
