@@ -22,20 +22,14 @@
 
         <dependency>
             <groupId>io.apicurio</groupId>
-            <artifactId>apicurio-registry-client-vertx</artifactId>
-            <version>${apicurio-registry.version}</version>
+            <artifactId>apicurio-common-rest-client-vertx</artifactId>
+            <version>${apicurio-common-rest-client.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <version>${slf4j.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>${vertx.version}</version>
         </dependency>
     </dependencies>
 

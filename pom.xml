@@ -72,6 +72,9 @@
         <!-- Vert.x version -->
         <vertx.version>3.9.5</vertx.version>
 
+        <apicurio-common-rest-client.version>0.0.7.Final</apicurio-common-rest-client.version>
+
+
         <!-- Plugin Versions -->
         <version.compiler.plugin>3.8.1</version.compiler.plugin>
         <version.deploy.plugin>2.8.2</version.deploy.plugin>
