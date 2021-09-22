@@ -4,7 +4,7 @@ package io.apicurio.registry.examples;
 import io.apicurio.registry.examples.util.RegistryDemoUtil;
 import io.apicurio.registry.rest.client.RegistryClient;
 import io.apicurio.registry.rest.client.RegistryClientFactory;
-import io.apicurio.registry.rest.client.VertxHttpClientProvider;
+import io.apicurio.rest.client.VertxHttpClientProvider;
 import io.vertx.core.Vertx;
 
 import java.util.UUID;
