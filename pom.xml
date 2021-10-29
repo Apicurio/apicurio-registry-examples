@@ -43,7 +43,7 @@
         <module>simple-avro-maven</module>
         <!-- <module>rest-client</module> -->
         <module>mix-avro</module>
-        <module>camel-quarkus-kafka</module>
+        <!-- <module>camel-quarkus-kafka</module> -->
     </modules>
 
     <properties>
