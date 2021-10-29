@@ -41,9 +41,9 @@
         <module>avro-bean</module>
         <module>custom-resolver</module>
         <module>simple-avro-maven</module>
-        <!-- <module>rest-client</module> -->
+        <module>rest-client</module>
         <module>mix-avro</module>
-        <!-- <module>camel-quarkus-kafka</module> -->
+        <module>camel-quarkus-kafka</module>
     </modules>
 
     <properties>
@@ -73,7 +73,7 @@
         <!-- Vert.x version -->
         <vertx.version>3.9.5</vertx.version>
 
-        <apicurio-common-rest-client.version>0.0.7.Final</apicurio-common-rest-client.version>
+        <apicurio-common-rest-client.version>0.0.9.Final</apicurio-common-rest-client.version>
 
 
         <!-- Plugin Versions -->
