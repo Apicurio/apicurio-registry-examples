@@ -35,7 +35,7 @@ import io.apicurio.registry.serde.strategy.ArtifactReference;
 import io.apicurio.registry.types.ArtifactType;
 
 /**
- * A custom schema resolve that simply uses the Avro schema found in the {@link Config}
+ * A custom schema resolver that simply uses the Avro schema found in the {@link Config}
  * class - and ensures that the schema exists in the registry (so that the deserializer
  * is guaranteed to be able to retrieve the exact schema used).
  * @author eric.wittmann@gmail.com
@@ -82,9 +82,7 @@ public class CustomSchemaResolver<D> extends AbstractSchemaResolver<Schema, D> {
 
             // Also update the schemaCacheByGlobalId - useful if this resolver is used by both
             // the serializer and deserializer in the same Java application.
-            schemaCacheByGlobalId.put(metaData.getGlobalId(), result);
-
-            return result;
+            return schemaCache.getByGlobalId(metaData.getGlobalId(), (id) -> result);
         });
     }
 
