@@ -183,7 +183,7 @@ public class CustomSchemaResolverExample {
         return consumer;
     }
 
-    public static void configureSecurityIfPresent(Properties props) {
+    private static void configureSecurityIfPresent(Properties props) {
         final String tokenEndpoint = System.getenv(SerdeConfig.AUTH_TOKEN_ENDPOINT);
         if (tokenEndpoint != null) {
 
