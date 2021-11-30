@@ -19,8 +19,12 @@ package io.apicurio.registry.examples.confluent.serdes;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
+import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.rest.RestService;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -31,6 +35,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -77,7 +82,7 @@ public class ConfluentSerdesExample {
         String subjectName = SUBJECT_NAME;
 
         // Create the producer.
-        Producer<Object, Object> producer = createKafkaProducer();
+        Producer<String, Object> producer = createKafkaProducer();
         // Produce 5 messages.
         int producedMessages = 0;
         try {
@@ -92,7 +97,7 @@ public class ConfluentSerdesExample {
                 record.put("Time", now.getTime());
 
                 // Send/produce the message on the Kafka Producer
-                ProducerRecord<Object, Object> producedRecord = new ProducerRecord<>(topicName, subjectName, record);
+                ProducerRecord<String, Object> producedRecord = new ProducerRecord<>(topicName, subjectName, record);
                 producer.send(producedRecord);
 
                 Thread.sleep(100);
@@ -137,7 +142,7 @@ public class ConfluentSerdesExample {
     /**
      * Creates the Kafka producer.
      */
-    private static Producer<Object, Object> createKafkaProducer() {
+    private static Producer<String, Object> createKafkaProducer() {
         Properties props = new Properties();
 
         // Configure kafka settings
@@ -145,16 +150,31 @@ public class ConfluentSerdesExample {
         props.putIfAbsent(ProducerConfig.CLIENT_ID_CONFIG, "Producer-" + TOPIC_NAME);
         props.putIfAbsent(ProducerConfig.ACKS_CONFIG, "all");
         props.putIfAbsent(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        // Use the Confluent provided Kafka Serializer for Avro
-        props.putIfAbsent(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
+
+        RestService restService = new RestService(CCOMPAT_API_URL);
+        final Map<String, String> restServiceProperties = new HashMap<>();
+        //If auth is enabled using the env var, we try to configure it
+        if (Boolean.parseBoolean(System.getenv("CONFIGURE_AUTH"))) {
+            restServiceProperties.put("basic.auth.credentials.source", "USER_INFO");
+            restServiceProperties.put("schema.registry.basic.auth.user.info", String.format("%s:%s", System.getenv(SerdeConfig.AUTH_CLIENT_ID), System.getenv(SerdeConfig.AUTH_CLIENT_SECRET)));
+        }
+
+        CachedSchemaRegistryClient schemaRegistryClient = new CachedSchemaRegistryClient(restService, 100, restServiceProperties);
+
+        Map<String, String> properties = new HashMap<>();
+
         // Configure Service Registry location (Confluent API)
-        props.put("schema.registry.url", CCOMPAT_API_URL);
-        props.put("auto.register.schemas", "true");
+        properties.put("schema.registry.url", REGISTRY_URL);
+        properties.put("auto.register.schemas", "true");
         // Map the topic name to the artifactId in the registry
-        props.put("value.subject.name.strategy", "io.confluent.kafka.serializers.subject.TopicRecordNameStrategy");
+        properties.put("value.subject.name.strategy", "io.confluent.kafka.serializers.subject.TopicRecordNameStrategy");
+
+        // Use the Confluent provided Kafka Serializer for Avro
+        KafkaAvroSerializer valueSerializer = new KafkaAvroSerializer(schemaRegistryClient, properties);
+        StringSerializer keySerializer = new StringSerializer();
 
         // Create the Kafka producer
-        Producer<Object, Object> producer = new KafkaProducer<>(props);
+        Producer<String, Object> producer = new KafkaProducer<String, Object>(props, keySerializer, valueSerializer);
         return producer;
     }
 
@@ -182,9 +202,34 @@ public class ConfluentSerdesExample {
         // the deserializer should use is sent as part of the payload.  So the deserializer simply
         // extracts that globalId and uses it to look up the Schema from the registry.
 
+        //Just if security values are present, then we configure them.
+        configureSecurityIfPresent(props);
+
         // Create the Kafka Consumer
         KafkaConsumer<Long, GenericRecord> consumer = new KafkaConsumer<>(props);
         return consumer;
+    }
+
+    private static void configureSecurityIfPresent(Properties props) {
+
+        final String tokenEndpoint = System.getenv(SerdeConfig.AUTH_TOKEN_ENDPOINT);
+        if (tokenEndpoint != null) {
+
+            final String authClient = System.getenv(SerdeConfig.AUTH_CLIENT_ID);
+            final String authSecret = System.getenv(SerdeConfig.AUTH_CLIENT_SECRET);
+
+            props.putIfAbsent(SerdeConfig.AUTH_CLIENT_SECRET, authSecret);
+            props.putIfAbsent(SerdeConfig.AUTH_CLIENT_ID, authClient);
+            props.putIfAbsent(SerdeConfig.AUTH_TOKEN_ENDPOINT, tokenEndpoint);
+            props.putIfAbsent(SaslConfigs.SASL_MECHANISM, "OAUTHBEARER");
+            props.putIfAbsent(SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS, "io.strimzi.kafka.oauth.client.JaasClientOauthLoginCallbackHandler");
+            props.putIfAbsent("security.protocol", "SASL_SSL");
+
+            props.putIfAbsent(SaslConfigs.SASL_JAAS_CONFIG, String.format("org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required " +
+                    "  oauth.client.id=%s " +
+                    "  oauth.client.secret=%s " +
+                    "  oauth.token.endpoint.uri=\"%s\" ;", authClient, authSecret, tokenEndpoint));
+        }
     }
 
 }
