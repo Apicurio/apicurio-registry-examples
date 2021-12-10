@@ -16,11 +16,9 @@
 
 package io.apicurio.registry.examples.simple.avro;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Properties;
-
+import io.apicurio.registry.serde.SerdeConfig;
+import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
+import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -35,9 +33,10 @@ import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.serde.SerdeConfig;
-import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
-import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Properties;
 
 /**
  * This example demonstrates how to use the Apicurio Registry in a very simple publish/subscribe
@@ -49,7 +48,7 @@ import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
  *   <li>Auto-register the Avro schema in the registry (registered by the producer)</li>
  *   <li>Data sent as a simple GenericRecord, no java beans needed</li>
  * </ol>
- *
+ * <p>
  * Pre-requisites:
  *
  * <ul>
@@ -61,14 +60,14 @@ import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
  */
 public class SimpleAvroExample {
 
-    private static final String REGISTRY_URL = "http://localhost:8080/apis/registry/v2";
-    private static final String SERVERS = "localhost:9092";
+    private static final String REGISTRY_URL = "https://bu98.serviceregistry.rhcloud.com/t/88a86411-f459-4305-ba1b-d9fd81e1044f/apis/registry/v2";
+    private static final String SERVERS = "carnalca-t-c-kbn--g-ue-eacrogra.bf2.kafka.rhcloud.com:443";
     private static final String TOPIC_NAME = SimpleAvroExample.class.getSimpleName();
     private static final String SUBJECT_NAME = "Greeting";
     private static final String SCHEMA = "{\"type\":\"record\",\"name\":\"Greeting\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Time\",\"type\":\"long\"}]}";
 
 
-    public static final void main(String [] args) throws Exception {
+    public static final void main(String[] args) throws Exception {
         System.out.println("Starting example " + SimpleAvroExample.class.getSimpleName());
         String topicName = TOPIC_NAME;
         String subjectName = SUBJECT_NAME;
@@ -203,8 +202,8 @@ public class SimpleAvroExample {
             props.putIfAbsent("security.protocol", "SASL_SSL");
 
             props.putIfAbsent(SaslConfigs.SASL_JAAS_CONFIG, String.format("org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required " +
-                    "  oauth.client.id=%s " +
-                    "  oauth.client.secret=%s " +
+                    "  oauth.client.id=\"%s\" "+
+                    "  oauth.client.secret=\"%s\" "+
                     "  oauth.token.endpoint.uri=\"%s\" ;", authClient, authSecret, tokenEndpoint));
         }
     }

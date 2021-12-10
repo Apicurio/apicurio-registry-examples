@@ -197,7 +197,7 @@ public class ProtobufBeanExample {
         return consumer;
     }
 
-    public static void configureSecurityIfPresent(Properties props) {
+    private static void configureSecurityIfPresent(Properties props) {
         final String tokenEndpoint = System.getenv(SerdeConfig.AUTH_TOKEN_ENDPOINT);
         if (tokenEndpoint != null) {
 
@@ -212,8 +212,8 @@ public class ProtobufBeanExample {
             props.putIfAbsent("security.protocol", "SASL_SSL");
 
             props.putIfAbsent(SaslConfigs.SASL_JAAS_CONFIG, String.format("org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required " +
-                    "  oauth.client.id=%s " +
-                    "  oauth.client.secret=%s " +
+                    "  oauth.client.id=\"%s\" "+
+                    "  oauth.client.secret=\"%s\" "+
                     "  oauth.token.endpoint.uri=\"%s\" ;", authClient, authSecret, tokenEndpoint));
         }
     }
