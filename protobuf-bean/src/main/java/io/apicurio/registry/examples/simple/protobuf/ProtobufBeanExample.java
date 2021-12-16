@@ -162,6 +162,9 @@ public class ProtobufBeanExample {
         // Register the artifact if not found in the registry.
         props.putIfAbsent(SerdeConfig.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
 
+        //Just if security values are present, then we configure them.
+        configureSecurityIfPresent(props);
+
         // Create the Kafka producer
         Producer<Object, AddressBook> producer = new KafkaProducer<>(props);
         return producer;
@@ -191,6 +194,9 @@ public class ProtobufBeanExample {
 
         // the serializer also puts information about the AddressBook java class in the kafka record headers
         // with this the deserializer can automatically return that same java class.
+
+        //Just if security values are present, then we configure them.
+        configureSecurityIfPresent(props);
 
         // Create the Kafka Consumer
         KafkaConsumer<Long, AddressBook> consumer = new KafkaConsumer<>(props);

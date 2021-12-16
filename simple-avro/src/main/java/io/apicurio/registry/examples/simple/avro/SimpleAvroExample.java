@@ -60,8 +60,8 @@ import java.util.Properties;
  */
 public class SimpleAvroExample {
 
-    private static final String REGISTRY_URL = "https://bu98.serviceregistry.rhcloud.com/t/88a86411-f459-4305-ba1b-d9fd81e1044f/apis/registry/v2";
-    private static final String SERVERS = "carnalca-t-c-kbn--g-ue-eacrogra.bf2.kafka.rhcloud.com:443";
+    private static final String REGISTRY_URL = "http://localhost:8080/apis/registry/v2";
+    private static final String SERVERS = "localhost:9092";
     private static final String TOPIC_NAME = SimpleAvroExample.class.getSimpleName();
     private static final String SUBJECT_NAME = "Greeting";
     private static final String SCHEMA = "{\"type\":\"record\",\"name\":\"Greeting\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Time\",\"type\":\"long\"}]}";
