@@ -26,6 +26,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -161,6 +162,9 @@ public class ProtobufBeanExample {
         // Register the artifact if not found in the registry.
         props.putIfAbsent(SerdeConfig.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
 
+        //Just if security values are present, then we configure them.
+        configureSecurityIfPresent(props);
+
         // Create the Kafka producer
         Producer<Object, AddressBook> producer = new KafkaProducer<>(props);
         return producer;
@@ -191,9 +195,33 @@ public class ProtobufBeanExample {
         // the serializer also puts information about the AddressBook java class in the kafka record headers
         // with this the deserializer can automatically return that same java class.
 
+        //Just if security values are present, then we configure them.
+        configureSecurityIfPresent(props);
+
         // Create the Kafka Consumer
         KafkaConsumer<Long, AddressBook> consumer = new KafkaConsumer<>(props);
         return consumer;
+    }
+
+    private static void configureSecurityIfPresent(Properties props) {
+        final String tokenEndpoint = System.getenv(SerdeConfig.AUTH_TOKEN_ENDPOINT);
+        if (tokenEndpoint != null) {
+
+            final String authClient = System.getenv(SerdeConfig.AUTH_CLIENT_ID);
+            final String authSecret = System.getenv(SerdeConfig.AUTH_CLIENT_SECRET);
+
+            props.putIfAbsent(SerdeConfig.AUTH_CLIENT_SECRET, authSecret);
+            props.putIfAbsent(SerdeConfig.AUTH_CLIENT_ID, authClient);
+            props.putIfAbsent(SerdeConfig.AUTH_TOKEN_ENDPOINT, tokenEndpoint);
+            props.putIfAbsent(SaslConfigs.SASL_MECHANISM, "OAUTHBEARER");
+            props.putIfAbsent(SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS, "io.strimzi.kafka.oauth.client.JaasClientOauthLoginCallbackHandler");
+            props.putIfAbsent("security.protocol", "SASL_SSL");
+
+            props.putIfAbsent(SaslConfigs.SASL_JAAS_CONFIG, String.format("org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required " +
+                    "  oauth.client.id=\"%s\" "+
+                    "  oauth.client.secret=\"%s\" "+
+                    "  oauth.token.endpoint.uri=\"%s\" ;", authClient, authSecret, tokenEndpoint));
+        }
     }
 
 }
