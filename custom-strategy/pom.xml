@@ -9,17 +9,13 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>apicurio-registry-examples-protobuf-find-latest</artifactId>
+    <artifactId>apicurio-registry-examples-custom-strategy</artifactId>
     <packaging>jar</packaging>
-
-    <properties>
-        <proto-plugin.version>0.6.1</proto-plugin.version>
-    </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.apicurio</groupId>
-            <artifactId>apicurio-registry-serdes-protobuf-serde</artifactId>
+            <artifactId>apicurio-registry-serdes-avro-serde</artifactId>
             <version>${apicurio-registry.version}</version>
         </dependency>
         <dependency>
@@ -33,27 +29,5 @@
             <version>0.8.1</version>
         </dependency>
     </dependencies>
-
-    <build>
-    
-        <plugins>
-        
-            <plugin>
-              <groupId>org.xolstice.maven.plugins</groupId>
-              <artifactId>protobuf-maven-plugin</artifactId>
-              <version>${proto-plugin.version}</version>
-              <extensions>true</extensions>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>compile</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
-        
-        </plugins>
-    
-    </build>
 
 </project>

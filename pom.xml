@@ -37,13 +37,20 @@
     <modules>
         <module>simple-avro</module>
         <module>simple-json</module>
+        <module>simple-protobuf</module>
         <module>confluent-serdes</module>
         <module>avro-bean</module>
         <module>custom-resolver</module>
+        <module>custom-strategy</module>
         <module>simple-avro-maven</module>
         <module>rest-client</module>
         <module>mix-avro</module>
         <module>simple-validation</module>
+        <module>protobuf-bean</module>
+        <module>protobuf-find-latest</module>
+        <module>quarkus-auth</module>
+        <module>quarkus-demo/quarkus-example</module>
+        <module>quarkus-demo/quarkus-kafka-streams</module>
 	<!--<module>camel-quarkus-kafka</module>-->
     </modules>
 
