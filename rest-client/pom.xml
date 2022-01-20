@@ -23,7 +23,7 @@
         <dependency>
             <groupId>io.apicurio</groupId>
             <artifactId>apicurio-common-rest-client-vertx</artifactId>
-            <version>0.0.9.Final</version>
+            <version>${apicurio-common-rest-client.version}</version>
         </dependency>
 
         <dependency>
