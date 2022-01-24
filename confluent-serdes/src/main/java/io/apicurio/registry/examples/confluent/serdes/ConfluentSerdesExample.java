@@ -73,7 +73,7 @@ public class ConfluentSerdesExample {
     private static final String SERVERS = "localhost:9092";
     private static final String TOPIC_NAME = ConfluentSerdesExample.class.getSimpleName();
     private static final String SUBJECT_NAME = "Greeting";
-    private static final String SCHEMA = "{\"type\":\"record\",\"name\":\"Greeting\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Time\",\"type\":\"long\"}]}";
+    private static final String SCHEMA = "{\"type\":\"record\",\"name\":\"Greeting\",\"fields\":[{\"name\":\"Message\",\"type\":\"string\"},{\"name\":\"Timestamp\",\"type\":\"long\"}]}";
 
 
     public static final void main(String [] args) throws Exception {
@@ -94,7 +94,7 @@ public class ConfluentSerdesExample {
                 Date now = new Date();
                 String message = "Hello (" + producedMessages++ + ")!";
                 record.put("Message", message);
-                record.put("Time", now.getTime());
+                record.put("Timestamp", now.getTime());
 
                 // Send/produce the message on the Kafka Producer
                 ProducerRecord<String, Object> producedRecord = new ProducerRecord<>(topicName, subjectName, record);
@@ -129,7 +129,7 @@ public class ConfluentSerdesExample {
                     System.out.println("No messages waiting...");
                 } else records.forEach(record -> {
                     GenericRecord value = record.value();
-                    System.out.println("Consumed a message: " + value.get("Message") + " @ " + new Date((long) value.get("Time")));
+                    System.out.println("Consumed a message: " + value.get("Message") + " @ " + new Date((long) value.get("Timestamp")));
                 });
             }
         } finally {
@@ -151,6 +151,8 @@ public class ConfluentSerdesExample {
         props.putIfAbsent(ProducerConfig.ACKS_CONFIG, "all");
         props.putIfAbsent(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
+        configureSecurityIfPresent(props);
+
         RestService restService = new RestService(CCOMPAT_API_URL);
         final Map<String, String> restServiceProperties = new HashMap<>();
         //If auth is enabled using the env var, we try to configure it
@@ -164,7 +166,7 @@ public class ConfluentSerdesExample {
         Map<String, String> properties = new HashMap<>();
 
         // Configure Service Registry location (Confluent API)
-        properties.put("schema.registry.url", REGISTRY_URL);
+        properties.put("schema.registry.url", CCOMPAT_API_URL);
         properties.put("auto.register.schemas", "true");
         // Map the topic name to the artifactId in the registry
         properties.put("value.subject.name.strategy", "io.confluent.kafka.serializers.subject.TopicRecordNameStrategy");
