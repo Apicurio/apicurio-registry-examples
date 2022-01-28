@@ -45,6 +45,7 @@
         <module>simple-avro-maven</module>
         <module>rest-client</module>
         <module>mix-avro</module>
+        <module>jsonschema-validation</module>
         <module>simple-validation</module>
         <module>protobuf-bean</module>
         <module>protobuf-find-latest</module>
@@ -84,6 +85,8 @@
         <!-- Apicurio REST client-->
         <apicurio-common-rest-client.version>0.0.9.Final</apicurio-common-rest-client.version>
 
+        <!-- Apicurio schema validation library -->
+        <apicurio-registry-schema-validation.version>0.0.1.Final</apicurio-registry-schema-validation.version>
 
         <!-- Plugin Versions -->
         <version.compiler.plugin>3.8.1</version.compiler.plugin>
