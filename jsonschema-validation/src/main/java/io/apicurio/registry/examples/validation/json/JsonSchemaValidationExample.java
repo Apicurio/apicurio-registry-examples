@@ -29,10 +29,15 @@ import io.apicurio.registry.rest.client.RegistryClient;
 import io.apicurio.registry.rest.client.RegistryClientFactory;
 import io.apicurio.registry.rest.v2.beans.IfExists;
 import io.apicurio.registry.types.ArtifactType;
+import io.apicurio.rest.client.auth.OidcAuth;
+import io.apicurio.rest.client.auth.exception.AuthErrorHandler;
+import io.apicurio.rest.client.spi.ApicurioHttpClient;
+import io.apicurio.rest.client.spi.ApicurioHttpClientFactory;
 import io.apicurio.schema.validation.json.JsonMetadata;
 import io.apicurio.schema.validation.json.JsonRecord;
 import io.apicurio.schema.validation.json.JsonValidationResult;
 import io.apicurio.schema.validation.json.JsonValidator;
+import java.util.Collections;
 
 /**
  * This example demonstrates how to use Apicurio Registry Schema Validation library for JSON and JSON Schema.
@@ -85,7 +90,7 @@ public class JsonSchemaValidationExample {
 
         // Register the schema with the registry (only if it is not already registered)
         String artifactId = JsonSchemaValidationExample.class.getSimpleName();
-        RegistryClient client = RegistryClientFactory.create(REGISTRY_URL);
+        RegistryClient client = createRegistryClient(REGISTRY_URL);
         client.createArtifact("default", artifactId, ArtifactType.JSON, IfExists.RETURN_OR_UPDATE, new ByteArrayInputStream(SCHEMA.getBytes(StandardCharsets.UTF_8)));
 
         // Create an artifact reference pointing to the artifact we just created
@@ -131,6 +136,24 @@ public class JsonSchemaValidationExample {
         System.out.println("Validation result: " + recordValidationResult);
         System.out.println();
 
+    }
+    
+    /**
+     * Creates the registry client
+     */
+    private static RegistryClient createRegistryClient(String registryUrl) {
+        final String tokenEndpoint = System.getenv(SchemaResolverConfig.AUTH_TOKEN_ENDPOINT);
+
+        //Just if security values are present, then we configure them.
+        if (tokenEndpoint != null) {
+            final String authClient = System.getenv(SchemaResolverConfig.AUTH_CLIENT_ID);
+            final String authSecret = System.getenv(SchemaResolverConfig.AUTH_CLIENT_SECRET);
+            ApicurioHttpClient httpClient = ApicurioHttpClientFactory.create(tokenEndpoint, new AuthErrorHandler());
+            OidcAuth auth = new OidcAuth(httpClient, authClient, authSecret);
+            return RegistryClientFactory.create(registryUrl, Collections.emptyMap(), auth);
+        } else {
+            return RegistryClientFactory.create(registryUrl);
+        }
     }
 
     /**
