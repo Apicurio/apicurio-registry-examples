@@ -3,6 +3,8 @@ on:
   push:
   pull_request:
     branches: [master]
+  repository_dispatch:
+    types: [on-registry-updated]
 
 jobs:
   build-project:
