@@ -4,7 +4,7 @@
 
     <groupId>io.apicurio</groupId>
     <artifactId>apicurio-registry-examples</artifactId>
-    <version>2.1.6-SNAPSHOT</version>
+    <version>2.2.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <url>https://www.apicur.io/</url>
@@ -45,7 +45,6 @@
     <modules>
         <module>simple-avro</module>
         <module>simple-json</module>
-        <module>simple-protobuf</module>
         <module>confluent-serdes</module>
         <module>avro-bean</module>
         <module>custom-resolver</module>
@@ -55,8 +54,6 @@
         <module>mix-avro</module>
         <module>jsonschema-validation</module>
         <module>simple-validation</module>
-        <module>protobuf-bean</module>
-        <module>protobuf-find-latest</module>
         <module>quarkus-auth</module>
         <module>quarkus-demo/quarkus-example</module>
         <module>quarkus-demo/quarkus-kafka-streams</module>
@@ -75,7 +72,7 @@
         <maven.compiler.target>11</maven.compiler.target>
 
         <!-- Apicurio Registry Version -->
-        <apicurio-registry.version>2.1.5.Final</apicurio-registry.version>
+        <apicurio-registry.version>2.2.0.Final</apicurio-registry.version>
 
         <!-- Kafka -->
         <kafka.version>2.8.1</kafka.version>
@@ -244,6 +241,14 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>protobuf</id>
+            <modules>
+                <module>simple-protobuf</module>
+                <module>protobuf-bean</module>
+                <module>protobuf-find-latest</module>
+            </modules>
         </profile>
     </profiles>
 
