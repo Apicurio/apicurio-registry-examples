@@ -2,7 +2,6 @@ package io.apicurio.registry.examples;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.UUID;
 
 import io.apicurio.registry.examples.util.RegistryDemoUtil;
