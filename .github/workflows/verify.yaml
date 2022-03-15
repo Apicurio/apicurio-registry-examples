@@ -48,7 +48,7 @@ jobs:
         run: cd apicurio-registry-examples && mvn versions:set-property -Dproperty=apicurio-registry.version -DgenerateBackupPoms=false -DnewVersion=${{ env.REGISTRY_VERSION }}
         
       - name: Check Dependency Tree
-        run: cd apicurio-registry-examples && ./mvnw dependency:tree
+        run: cd apicurio-registry-examples && ./mvnw dependency:tree --no-transfer-progress
         
       - name: Build Registry Examples
         run: cd apicurio-registry-examples && ./mvnw clean install --no-transfer-progress
