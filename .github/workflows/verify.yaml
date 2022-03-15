@@ -13,15 +13,40 @@ jobs:
     steps:
       - name: Checkout Code with Ref '${{ github.ref }}'
         uses: actions/checkout@v2
+        with:
+          path: apicurio-registry-examples
+          
+      - name: Checkout Apicurio Registry
+        if: github.event_name == 'repository_dispatch'
+        uses: actions/checkout@v2
+        with:
+           repository: Apicurio/apicurio-registry
+           path: apicurio-registry
 
       - name: Set up JDK 11
         uses: AdoptOpenJDK/install-jdk@v1
         with:
           version: 11
           architecture: x64
+          
+      - name: Build Apicurio Registry
+        if: github.event_name == 'repository_dispatch'
+        env:
+          SKIP_TESTS: "true"
+        run: cd apicurio-registry && make build-all
+        
+      - name: Retrieve Registry Version
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          cd apicurio-registry
+          echo "REGISTRY_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
-      - name: Build Project
-        run: ./mvnw clean install
+      - name: Update Registry Version '${env.REGISTRY_VERSION}' in Examples Project
+        if: github.event_name == 'repository_dispatch'
+        run: cd apicurio-registry-examples && mvn versions:set-property -Dproperty=apicurio-registry.version -DgenerateBackupPoms=false -DnewVersion=${{ env.REGISTRY_VERSION }}
+        
+      - name: Build Registry Examples
+        run: cd apicurio-registry-examples && ./mvnw clean install
 
       - name: Google Chat Notification
         if: ${{ failure() }}
