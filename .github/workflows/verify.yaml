@@ -33,6 +33,7 @@ jobs:
         if: github.event_name == 'repository_dispatch'
         env:
           SKIP_TESTS: "true"
+          BUILD_FLAGS: '--no-transfer-progress'
         run: cd apicurio-registry && make build-all
         
       - name: Retrieve Registry Version
@@ -46,7 +47,7 @@ jobs:
         run: cd apicurio-registry-examples && mvn versions:set-property -Dproperty=apicurio-registry.version -DgenerateBackupPoms=false -DnewVersion=${{ env.REGISTRY_VERSION }}
         
       - name: Build Registry Examples
-        run: cd apicurio-registry-examples && ./mvnw clean install
+        run: cd apicurio-registry-examples && ./mvnw clean install --no-transfer-progress
 
       - name: Google Chat Notification
         if: ${{ failure() }}
