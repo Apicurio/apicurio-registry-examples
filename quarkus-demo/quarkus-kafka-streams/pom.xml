@@ -9,7 +9,6 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.apicurio</groupId>
     <artifactId>apicurio-kafka-demo-quarkus-kafka-streams</artifactId>
     <name>apicurio-kafka-demo-quarkus kafka-streams</name>
     <description>Demo project for apicurio and kafka using quarkus kafka streams</description>
@@ -45,7 +44,6 @@
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
-            <version>${avro.version}</version>
         </dependency>
         <dependency>
             <groupId>io.apicurio</groupId>

@@ -5,7 +5,6 @@
  */
 package io.apicurio.example.schema.avro;
 
-import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
 import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
@@ -95,10 +94,13 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
     this.source = source;
   }
 
-  public org.apache.avro.specific.SpecificData getSpecificData() { return MODEL$; }
-  public org.apache.avro.Schema getSchema() { return SCHEMA$; }
+  @Override
+public org.apache.avro.specific.SpecificData getSpecificData() { return MODEL$; }
+  @Override
+public org.apache.avro.Schema getSchema() { return SCHEMA$; }
   // Used by DatumWriter.  Applications should not call.
-  public java.lang.Object get(int field$) {
+  @Override
+public java.lang.Object get(int field$) {
     switch (field$) {
     case 0: return name;
     case 1: return description;
@@ -108,7 +110,8 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
   }
 
   // Used by DatumReader.  Applications should not call.
-  @SuppressWarnings(value="unchecked")
+  @Override
+@SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
     case 0: name = (java.lang.CharSequence)value$; break;
@@ -398,7 +401,7 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
 
   @SuppressWarnings("unchecked")
   private static final org.apache.avro.io.DatumWriter<Event>
-    WRITER$ = (org.apache.avro.io.DatumWriter<Event>)MODEL$.createDatumWriter(SCHEMA$);
+    WRITER$ = MODEL$.createDatumWriter(SCHEMA$);
 
   @Override public void writeExternal(java.io.ObjectOutput out)
     throws java.io.IOException {
@@ -407,7 +410,7 @@ public class Event extends org.apache.avro.specific.SpecificRecordBase implement
 
   @SuppressWarnings("unchecked")
   private static final org.apache.avro.io.DatumReader<Event>
-    READER$ = (org.apache.avro.io.DatumReader<Event>)MODEL$.createDatumReader(SCHEMA$);
+    READER$ = MODEL$.createDatumReader(SCHEMA$);
 
   @Override public void readExternal(java.io.ObjectInput in)
     throws java.io.IOException {
