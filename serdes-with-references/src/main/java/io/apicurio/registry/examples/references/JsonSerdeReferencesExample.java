@@ -13,6 +13,7 @@ import io.apicurio.registry.serde.jsonschema.JsonSchemaKafkaDeserializer;
 import io.apicurio.registry.serde.jsonschema.JsonSchemaKafkaSerializer;
 import io.apicurio.registry.serde.strategy.SimpleTopicIdStrategy;
 import io.apicurio.registry.types.ArtifactType;
+import io.apicurio.registry.types.ContentTypes;
 import io.apicurio.rest.client.auth.OidcAuth;
 import io.apicurio.rest.client.auth.exception.AuthErrorHandler;
 import io.apicurio.rest.client.spi.ApicurioHttpClient;
@@ -35,11 +36,10 @@ import java.util.Properties;
 import java.util.UUID;
 
 public class JsonSerdeReferencesExample {
-
     private static final String REGISTRY_URL = "http://localhost:8080/apis/registry/v2";
     private static final String SERVERS = "localhost:9092";
     private static final String TOPIC_NAME = JsonSerdeReferencesExample.class.getSimpleName();
-    private static final String SUBJECT_NAME = "Citizen";
+    private static final String SUBJECT_NAME = "Greeting";
 
     public static void main(String[] args) throws Exception {
 
@@ -57,8 +57,8 @@ public class JsonSerdeReferencesExample {
                 IfExists.RETURN_OR_UPDATE, citySchema);
 
         final ArtifactReference reference = new ArtifactReference();
-        reference.setVersion("1");
-        reference.setGroupId("default");
+        reference.setVersion(amdCity.getVersion());
+        reference.setGroupId(amdCity.getGroupId());
         reference.setArtifactId(amdCity.getId());
         reference.setName("city.json");
 
@@ -67,7 +67,8 @@ public class JsonSerdeReferencesExample {
         // use the topic name as the artifactId because we're going to map topic name to artifactId later on.
 
         final ArtifactMetaData amdCitizen = client.createArtifact("default", artifactId, null,
-                ArtifactType.JSON, IfExists.RETURN, false, null, null, null, citizenSchema,
+                ArtifactType.JSON, IfExists.RETURN, false, null, null,
+                ContentTypes.APPLICATION_CREATE_EXTENDED, citizenSchema,
                 Collections.singletonList(reference));
 
         // Create the producer.
