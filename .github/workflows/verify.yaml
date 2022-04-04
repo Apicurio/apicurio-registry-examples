@@ -43,7 +43,7 @@ jobs:
           cd apicurio-registry
           echo "REGISTRY_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
-      - name: Update Registry Version '${env.REGISTRY_VERSION}' in Examples Project
+      - name: Update Registry Version '${{env.REGISTRY_VERSION}}' in Examples Project
         if: github.event_name == 'repository_dispatch'
         run: cd apicurio-registry-examples && mvn versions:set-property -Dproperty=apicurio-registry.version -DgenerateBackupPoms=false -DnewVersion=${{ env.REGISTRY_VERSION }}
         
