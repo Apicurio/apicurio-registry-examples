@@ -25,10 +25,10 @@ jobs:
            path: apicurio-registry
 
       - name: Set up JDK 11
-        uses: AdoptOpenJDK/install-jdk@v1
+        uses: actions/setup-java@v3
         with:
-          version: 11
-          architecture: x64
+          version: '11'
+          distribution: 'temurin'
           
       - name: Build Apicurio Registry
         if: github.event_name == 'repository_dispatch'
