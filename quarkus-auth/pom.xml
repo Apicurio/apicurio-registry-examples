@@ -19,12 +19,12 @@
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
-        <quarkus.platform.version>1.12.2.Final</quarkus.platform.version>
-        <quarkus-plugin.version>1.12.2.Final</quarkus-plugin.version>
+        <quarkus.platform.version>2.7.5.Final</quarkus.platform.version>
+        <quarkus-plugin.version>2.7.5.Final</quarkus-plugin.version>
 
         <avro.version>1.10.0</avro.version>
 
-        <apicurio-registry.version>2.2.1.Final</apicurio-registry.version>
+        <apicurio-registry.version>2.2.3.Final</apicurio-registry.version>
     </properties>
 
     <dependencyManagement>
@@ -52,9 +52,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.apicurio</groupId>
-            <artifactId>apicurio-registry-serdes-avro-serde</artifactId>
-            <version>${apicurio-registry.version}</version>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-apicurio-registry-avro</artifactId>
         </dependency>
 
         <dependency>
