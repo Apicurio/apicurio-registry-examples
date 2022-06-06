@@ -16,17 +16,13 @@
 
 package io.apicurio.registry.examples.simple.avro.maven;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Properties;
-
-import javax.ws.rs.WebApplicationException;
-
+import io.apicurio.registry.rest.client.RegistryClient;
+import io.apicurio.registry.rest.client.RegistryClientFactory;
+import io.apicurio.registry.rest.client.exception.NotFoundException;
+import io.apicurio.registry.rest.v2.beans.IfExists;
+import io.apicurio.registry.serde.SerdeConfig;
+import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
+import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -41,12 +37,14 @@ import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import io.apicurio.registry.rest.client.RegistryClient;
-import io.apicurio.registry.rest.client.RegistryClientFactory;
-import io.apicurio.registry.rest.v2.beans.IfExists;
-import io.apicurio.registry.serde.SerdeConfig;
-import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
-import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Properties;
 
 /**
  * This example demonstrates how to use the Apicurio Registry in a very simple publish/subscribe
@@ -92,12 +90,11 @@ public class SimpleAvroMavenExample {
         String schemaData = null;
         try (InputStream latestArtifact = client.getLatestArtifact("default", artifactId)) {
             schemaData = toString(latestArtifact);
-        } catch (WebApplicationException e) {
-            if (e.getResponse().getStatus() == 404) {
-                System.err.println("Schema not registered in registry.  Before running this example, please do:");
-                System.err.println("  mvn io.apicurio:apicurio-registry-maven-plugin:register@register-artifact");
-                System.exit(1);
-            }
+        } catch (NotFoundException e) {
+            System.err.println("Schema not registered in registry.  Before running this example, please do:");
+            System.err.println("  mvn io.apicurio:apicurio-registry-maven-plugin:register@register-artifact");
+            System.exit(1);
+
         }
 
         // Create the producer.
