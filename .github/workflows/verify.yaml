@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
   pull_request:
-    branches: [master]
+    branches: [main]
   repository_dispatch:
     types: [on-registry-updated]
 
@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: apicurio-registry-examples
-          
+
       - name: Checkout Apicurio Registry
         if: github.event_name == 'repository_dispatch'
         uses: actions/checkout@v2
@@ -29,14 +29,14 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-          
+
       - name: Build Apicurio Registry
         if: github.event_name == 'repository_dispatch'
         env:
           SKIP_TESTS: "true"
           BUILD_FLAGS: '--no-transfer-progress'
         run: cd apicurio-registry && make build-all
-        
+
       - name: Retrieve Registry Version
         if: github.event_name == 'repository_dispatch'
         run: |
@@ -46,10 +46,10 @@ jobs:
       - name: Update Registry Version '${{env.REGISTRY_VERSION}}' in Examples Project
         if: github.event_name == 'repository_dispatch'
         run: cd apicurio-registry-examples && mvn versions:set-property -Dproperty=apicurio-registry.version -DgenerateBackupPoms=false -DnewVersion=${{ env.REGISTRY_VERSION }}
-        
+
       - name: Check Dependency Tree
         run: cd apicurio-registry-examples && ./mvnw dependency:tree --no-transfer-progress
-        
+
       - name: Build Registry Examples
         run: cd apicurio-registry-examples && ./mvnw clean install --no-transfer-progress
 

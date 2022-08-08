@@ -35,7 +35,7 @@ The Apicurio Registry CloudEvents library consists of two maven modules:
 - `apicurio-registry-utils-cloud-events-serde`, provides the serialization and deserialization API, with data validation included. This component calls Apicurio Registry to fetch the required schemas to perform the serialization/deserialization/validation.
 - `apicurio-registry-utils-cloud-events-provider`, this contains a jaxrs provider implemented on top of CloudEvents [java sdk for restful services](https://github.com/cloudevents/sdk-java/tree/master/http/restful-ws). This provider allows to implement REST APIs that consume and produce CloudEvents, like the CloudEvents sdk does, but validating the CloudEvents data and ensuring the data adheres to it's respective schema stored in Apicurio Registry.
 
-This library is experimental and has not been released nor is available in the master branch of the Apicurio Registry project,
+This library is experimental and has not been released nor is available in the main branch of the Apicurio Registry project,
 so if you are interested you can find the source code [here](https://github.com/Apicurio/apicurio-registry/tree/cloud-events/utils/cloud-events).
 Also, to test the code (and to run this demo) you have to build it from source.
 
