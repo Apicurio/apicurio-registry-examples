@@ -131,7 +131,7 @@
                                 <import>${project.basedir}/src/main/resources/TradeRaw.avsc</import>
                             </imports>
                             <sourceDirectory>${project.basedir}/src/main/resources/</sourceDirectory>
-                            <outputDirectory>${project.basedir}/target/generated-sources</outputDirectory>
+                            <outputDirectory>${project.basedir}/target/generated-sources/avro</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

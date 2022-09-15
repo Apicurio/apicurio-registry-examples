@@ -66,9 +66,10 @@ public class JsonSerdeReferencesExample {
         String artifactId = TOPIC_NAME;
         // use the topic name as the artifactId because we're going to map topic name to artifactId later on.
 
+        @SuppressWarnings("unused")
         final ArtifactMetaData amdCitizen = client.createArtifact("default", artifactId, null,
                 ArtifactType.JSON, IfExists.RETURN, false, null, null,
-                ContentTypes.APPLICATION_CREATE_EXTENDED, citizenSchema,
+                ContentTypes.APPLICATION_CREATE_EXTENDED, null, null, citizenSchema,
                 Collections.singletonList(reference));
 
         // Create the producer.
