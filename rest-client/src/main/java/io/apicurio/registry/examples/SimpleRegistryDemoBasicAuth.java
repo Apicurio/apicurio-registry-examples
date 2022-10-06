@@ -1,16 +1,17 @@
 package io.apicurio.registry.examples;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
-
 import io.apicurio.registry.examples.util.RegistryDemoUtil;
 import io.apicurio.registry.rest.client.RegistryClient;
 import io.apicurio.registry.rest.client.RegistryClientFactory;
 import io.apicurio.rest.client.JdkHttpClient;
 import io.apicurio.rest.client.auth.Auth;
+import io.apicurio.rest.client.auth.BasicAuth;
 import io.apicurio.rest.client.auth.OidcAuth;
 import io.apicurio.rest.client.auth.exception.AuthErrorHandler;
+
+import java.util.Collections;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Simple demo app that shows how to use the client.
@@ -21,7 +22,7 @@ import io.apicurio.rest.client.auth.exception.AuthErrorHandler;
  *
  * @author Carles Arnal <carnalca@redhat.com>
  */
-public class SimpleRegistryDemo {
+public class SimpleRegistryDemoBasicAuth {
 
     private static final RegistryClient client;
 
@@ -50,7 +51,7 @@ public class SimpleRegistryDemo {
         if (tokenEndpoint != null) {
             final String authClient = System.getenv("AUTH_CLIENT_ID");
             final String authSecret = System.getenv("AUTH_CLIENT_SECRET");
-            Auth auth = new OidcAuth(new JdkHttpClient(tokenEndpoint, Collections.emptyMap(), null, new AuthErrorHandler()), authClient, authSecret);
+            Auth auth = new BasicAuth(authClient, authSecret);
             return RegistryClientFactory.create(new JdkHttpClient(registryUrl, Collections.emptyMap(), auth, new AuthErrorHandler()));
         } else {
             return RegistryClientFactory.create(registryUrl);
