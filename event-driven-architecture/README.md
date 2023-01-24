@@ -1,7 +1,7 @@
 # Kafka, ksqldb, Kafka-ui, apicurio-registry and Debezium together
 
-This tutorial demonstrates how to use [Debezium](https://debezium.io/) to monitor a PostgreSQL database. As the
-data in the database changes, you will see the resulting event streams.
+This tutorial demonstrates how to use [Debezium](https://debezium.io/) to monitor the PostgreSQL database used by Apicurio Registry. As the
+data in the database changes, by adding e.g. new schemas, you will see the resulting event streams.
 
 ## Avro serialization
 
@@ -58,7 +58,7 @@ The last command will start the following components:
 
 Configuring Avro at the Debezium Connector involves specifying the converter and schema registry as a part of
 the connectors configuration. The connector configuration file configures the connector but explicitly sets
-the (de-)serializers for the connector to use Avro and specifies the location of the Apicurio registry.
+the (de-)serializers for the connector to use Avro and specifies the location of the Apicurio registry. 
 
 > The container image used  in this environment includes all the required libraries to access the connectors and converters.
 
@@ -92,7 +92,7 @@ Let's create the Debezium connector to start capturing the changes of the databa
 
 ### Check the data
 
-The previous step created and started the connector. Now, all the data inserted will be captured by Debezium
+The previous step created and started the connector. Now, all the data inserted in the Apicurio Registry database will be captured by Debezium
 and sent as events into Kafka.
 
 ## Summary
