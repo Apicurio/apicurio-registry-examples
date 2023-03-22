@@ -34,14 +34,6 @@
         <url>scm:git:git@github.com:apicurio/apicurio-registry-examples.git</url>
     </scm>
 
-    <repositories>
-        <repository>
-            <id>redhat-ga</id>
-            <name>Red Hat GA</name>
-            <url>https://maven.repository.redhat.com/ga/</url>
-        </repository>
-    </repositories>
-
     <modules>
         <module>simple-avro</module>
         <module>simple-json</module>
@@ -55,8 +47,6 @@
         <module>jsonschema-validation</module>
         <module>simple-validation</module>
         <module>quarkus-auth</module>
-        <module>quarkus-demo/quarkus-example</module>
-        <module>quarkus-demo/quarkus-kafka-streams</module>
         <module>simple-avro-downstream</module>
         <module>rest-client-downstream</module>
         <module>serdes-with-references</module>
@@ -93,10 +83,10 @@
         <vertx.version>3.9.5</vertx.version>
 
         <!-- Apicurio REST client-->
-        <apicurio-common-rest-client.version>0.1.11.Final</apicurio-common-rest-client.version>
+        <apicurio-common-rest-client.version>0.1.14.Final</apicurio-common-rest-client.version>
 
         <!-- Apicurio schema validation library -->
-        <apicurio-registry-schema-validation.version>0.0.3.Final</apicurio-registry-schema-validation.version>
+        <apicurio-registry-schema-validation.version>0.0.4.Final</apicurio-registry-schema-validation.version>
 
         <!-- Plugin Versions -->
         <version.compiler.plugin>3.8.1</version.compiler.plugin>

@@ -33,6 +33,12 @@
             <artifactId>kafka-oauth-client</artifactId>
             <version>0.8.1</version>
         </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
