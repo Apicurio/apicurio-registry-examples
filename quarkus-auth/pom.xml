@@ -24,7 +24,7 @@
 
         <avro.version>1.10.0</avro.version>
 
-        <apicurio-registry.version>2.2.3.Final</apicurio-registry.version>
+        <apicurio-registry.version>2.4.1.Final</apicurio-registry.version>
     </properties>
 
     <dependencyManagement>

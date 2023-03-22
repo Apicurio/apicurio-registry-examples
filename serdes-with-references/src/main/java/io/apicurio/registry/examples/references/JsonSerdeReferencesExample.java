@@ -69,8 +69,8 @@ public class JsonSerdeReferencesExample {
         @SuppressWarnings("unused")
         final ArtifactMetaData amdCitizen = client.createArtifact("default", artifactId, null,
                 ArtifactType.JSON, IfExists.RETURN, false, null, null,
-                ContentTypes.APPLICATION_CREATE_EXTENDED, null, null, citizenSchema,
-                Collections.singletonList(reference));
+                ContentTypes.APPLICATION_CREATE_EXTENDED, null,
+                null, citizenSchema, Collections.singletonList(reference));
 
         // Create the producer.
         Producer<Object, Object> producer = createKafkaProducer();

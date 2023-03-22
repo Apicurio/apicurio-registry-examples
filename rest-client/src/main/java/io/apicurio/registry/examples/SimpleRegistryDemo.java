@@ -1,9 +1,5 @@
 package io.apicurio.registry.examples;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
-
 import io.apicurio.registry.examples.util.RegistryDemoUtil;
 import io.apicurio.registry.rest.client.RegistryClient;
 import io.apicurio.registry.rest.client.RegistryClientFactory;
@@ -11,6 +7,9 @@ import io.apicurio.rest.client.JdkHttpClient;
 import io.apicurio.rest.client.auth.Auth;
 import io.apicurio.rest.client.auth.OidcAuth;
 import io.apicurio.rest.client.auth.exception.AuthErrorHandler;
+
+import java.util.Collections;
+import java.util.UUID;
 
 /**
  * Simple demo app that shows how to use the client.
