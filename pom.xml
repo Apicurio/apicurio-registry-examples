@@ -75,7 +75,7 @@
         <maven.compiler.target>11</maven.compiler.target>
 
         <!-- Apicurio Registry Version -->
-        <apicurio-registry.version>2.3.0.Final</apicurio-registry.version>
+        <apicurio-registry.version>2.4.1.Final</apicurio-registry.version>
 
         <!-- Kafka -->
         <kafka.version>2.8.1</kafka.version>
