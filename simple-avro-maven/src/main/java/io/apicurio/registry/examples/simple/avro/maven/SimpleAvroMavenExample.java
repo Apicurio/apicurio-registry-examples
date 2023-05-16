@@ -171,7 +171,7 @@ public class SimpleAvroMavenExample {
 
         // Configure Service Registry location
         props.putIfAbsent(SerdeConfig.REGISTRY_URL, REGISTRY_URL);
-        // Get an existing schema - do not auto-register the schema if not found.
+        // Get an existing schema - auto-register the schema if not found.
         props.putIfAbsent(SerdeConfig.AUTO_REGISTER_ARTIFACT, Boolean.TRUE);
         props.putIfAbsent(SerdeConfig.AUTO_REGISTER_ARTIFACT_IF_EXISTS, IfExists.RETURN.name());
 
