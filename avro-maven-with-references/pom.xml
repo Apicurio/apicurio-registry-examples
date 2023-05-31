@@ -24,6 +24,7 @@
                         <goals>
                             <goal>register</goal>
                         </goals>
+                        <phase>process-test-resources</phase>
                         <configuration>
                             <registryUrl>http://localhost:8080/apis/registry/v2</registryUrl>
                             <artifacts>

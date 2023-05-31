@@ -7,8 +7,6 @@ import io.api.sample.TableNotification;
 import io.api.sample.TableNotificationType;
 import io.apicurio.registry.rest.v2.beans.IfExists;
 import io.apicurio.registry.serde.SerdeConfig;
-import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
-import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
 import io.apicurio.registry.serde.protobuf.ProtobufKafkaDeserializer;
 import io.apicurio.registry.serde.protobuf.ProtobufKafkaSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
