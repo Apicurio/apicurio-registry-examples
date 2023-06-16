@@ -47,6 +47,18 @@
                                     <ifExists>RETURN_OR_UPDATE</ifExists>
                                 </artifact>
 
+                                <!-- JSON Schema -->
+                                <artifact>
+                                    <groupId>json-maven-autoref</groupId>
+                                    <artifactId>person.json</artifactId>
+                                    <type>JSON</type>
+                                    <file>
+                                        ${project.basedir}/src/main/resources/schemas/json-schema/person.json
+                                    </file>
+                                    <ifExists>RETURN_OR_UPDATE</ifExists>
+                                    <autoRefs>true</autoRefs>
+                                </artifact>
+
                                 <!-- ASYNCAPI -->
                                 <artifact>
                                     <groupId>asyncapi-maven-autoref</groupId>
