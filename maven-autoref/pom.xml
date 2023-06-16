@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>apicurio-registry-examples</artifactId>
+        <groupId>io.apicurio</groupId>
+        <version>2.2.2-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>apicurio-registry-examples-maven-autoref</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.apicurio</groupId>
+                <artifactId>apicurio-registry-maven-plugin</artifactId>
+                <version>${apicurio-registry.version}</version>
+                <executions>
+                    <execution>
+                        <id>register-artifact</id>
+                        <goals>
+                            <goal>register</goal>
+                        </goals>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <registryUrl>http://localhost:8080/apis/registry/v2</registryUrl>
+                            <existingReferences>
+                                <existingReference>
+                                    <resourceName>google/protobuf/timestamp.proto</resourceName>
+                                    <groupId>google</groupId>
+                                    <artifactId>protobuf/timestamp.proto</artifactId>
+                                    <version>LATEST</version>
+                                </existingReference>
+                            </existingReferences>
+                            <artifacts>
+                                <!-- Global Refs -->
+                                <artifact>
+                                    <groupId>google</groupId>
+                                    <artifactId>protobuf/timestamp.proto</artifactId>
+                                    <version>1.0</version>
+                                    <type>PROTOBUF</type>
+                                    <file>
+                                        ${project.basedir}/src/main/resources/schemas/_global/google/protobuf/timestamp.proto
+                                    </file>
+                                    <ifExists>RETURN_OR_UPDATE</ifExists>
+                                </artifact>
+
+                                <!-- ASYNCAPI -->
+                                <artifact>
+                                    <groupId>asyncapi-maven-autoref</groupId>
+                                    <artifactId>account-service</artifactId>
+                                    <type>ASYNCAPI</type>
+                                    <file>
+                                        ${project.basedir}/src/main/resources/schemas/asyncapi/asyncapi.json
+                                    </file>
+                                    <ifExists>RETURN_OR_UPDATE</ifExists>
+                                    <autoRefs>true</autoRefs>
+                                </artifact>
+
+                                <!-- OPENAPI -->
+                                <artifact>
+                                    <groupId>openapi-maven-autoref</groupId>
+                                    <artifactId>widget-api</artifactId>
+                                    <type>OPENAPI</type>
+                                    <file>
+                                        ${project.basedir}/src/main/resources/schemas/openapi/openapi.json
+                                    </file>
+                                    <ifExists>RETURN_OR_UPDATE</ifExists>
+                                    <autoRefs>true</autoRefs>
+                                </artifact>
+
+                                <!-- AVRO -->
+                                <artifact>
+                                    <groupId>avro-maven-autoref</groupId>
+                                    <artifactId>com.kubetrade.schema.trade.TradeRaw</artifactId>
+                                    <type>AVRO</type>
+                                    <file>
+                                        ${project.basedir}/src/main/resources/schemas/avro/TradeRaw.avsc
+                                    </file>
+                                    <ifExists>RETURN_OR_UPDATE</ifExists>
+                                    <autoRefs>true</autoRefs>
+                                </artifact>
+
+                                <!-- PROTO -->
+                                <artifact>
+                                    <groupId>proto-maven-autoref</groupId>
+                                    <artifactId>TableNotification</artifactId>
+                                    <type>PROTOBUF</type>
+                                    <file>
+                                        ${project.basedir}/src/main/resources/schemas/proto/table_notification.proto
+                                    </file>
+                                    <ifExists>RETURN_OR_UPDATE</ifExists>
+                                    <autoRefs>true</autoRefs>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

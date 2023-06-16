@@ -1,0 +1,79 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Common Base Types",
+        "version": "1.0.0"
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "displayName": {
+                        "type": "string",
+                        "description": "Name of the user"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Email of the user"
+                    }
+                }
+            },
+            "Person": {
+                "title": "Root Type for Person",
+                "description": "",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "height": {
+                        "format": "int32",
+                        "type": "integer"
+                    }
+                },
+                "example": {
+                    "name": "Eric",
+                    "height": 134
+                }
+            },
+            "Error": {
+                "title": "Root Type for Error",
+                "description": "",
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "format": "int32",
+                        "type": "integer"
+                    }
+                },
+                "example": {
+                    "code": 404
+                }
+            }
+        },
+        "responses": {
+            "NotFound": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                },
+                "description": ""
+            },
+            "ServerError": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                },
+                "description": ""
+            }
+        }
+    }
+}
