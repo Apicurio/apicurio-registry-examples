@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>apicurio-registry-examples-avro-maven-with-references</artifactId>
+    <artifactId>apicurio-registry-examples-avro-maven-with-references-auto</artifactId>
     <packaging>jar</packaging>
 
     <build>
@@ -29,29 +29,16 @@
                             <registryUrl>http://localhost:8080/apis/registry/v2</registryUrl>
                             <artifacts>
                                 <artifact>
-                                    <groupId>avro-maven-with-references</groupId>
-                                    <artifactId>TradeKey</artifactId>
+                                    <groupId>avro-maven-with-references-auto</groupId>
+                                    <artifactId>TradeRaw</artifactId>
                                     <version>2.0</version>
                                     <type>AVRO</type>
                                     <file>
-                                        ${project.basedir}/src/main/resources/schemas/TradeKey.avsc
+                                        ${project.basedir}/src/main/resources/schemas/TradeRaw.avsc
                                     </file>
                                     <ifExists>RETURN_OR_UPDATE</ifExists>
                                     <canonicalize>true</canonicalize>
-                                    <references>
-                                        <reference>
-                                            <name>com.kubetrade.schema.common.Exchange</name>
-                                            <groupId>test-group</groupId>
-                                            <artifactId>Exchange</artifactId>
-                                            <version>2.0</version>
-                                            <type>AVRO</type>
-                                            <file>
-                                                ${project.basedir}/src/main/resources/schemas/Exchange.avsc
-                                            </file>
-                                            <ifExists>RETURN_OR_UPDATE</ifExists>
-                                            <canonicalize>true</canonicalize>
-                                        </reference>
-                                    </references>
+                                    <analyzeDirectory>true</analyzeDirectory>
                                 </artifact>
                             </artifacts>
                         </configuration>
