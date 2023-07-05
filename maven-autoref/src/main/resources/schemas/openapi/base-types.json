@@ -1,0 +1,50 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Widget Base Types",
+        "version": "1.0.0"
+    },
+    "components": {
+        "schemas": {
+            "Foo": {
+                "title": "Root Type for Foo",
+                "description": "        ",
+                "type": "object",
+                "properties": {
+                    "prop-1": {
+                        "type": "string"
+                    },
+                    "prop-2": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "prop-1": "",
+                    "prop-2": ""
+                }
+            },
+            "Bar": {
+                "title": "Root Type for Bar",
+                "description": "",
+                "type": "object",
+                "properties": {
+                    "one": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "two": {
+                        "type": "string"
+                    },
+                    "four": {
+                        "type": "boolean"
+                    }
+                },
+                "example": {
+                    "one": 1,
+                    "two": "threee",
+                    "four": true
+                }
+            }
+        }
+    }
+}

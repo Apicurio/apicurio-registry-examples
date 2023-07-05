@@ -52,6 +52,7 @@
         <module>serdes-with-references</module>
         <module>avro-maven-with-references</module>
         <module>protobuf-validation</module>
+        <module>maven-autoref</module>
         <!--<module>camel-quarkus-kafka</module>-->
     </modules>
 
@@ -65,7 +66,7 @@
         <maven.compiler.target>11</maven.compiler.target>
 
         <!-- Apicurio Registry Version -->
-        <apicurio-registry.version>2.4.1.Final</apicurio-registry.version>
+        <apicurio-registry.version>2.5.0-SNAPSHOT</apicurio-registry.version>
 
         <!-- Kafka -->
         <kafka.version>2.8.1</kafka.version>

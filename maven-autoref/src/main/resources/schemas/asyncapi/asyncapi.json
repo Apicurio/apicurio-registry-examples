@@ -1,0 +1,29 @@
+{
+    "asyncapi": "2.5.0",
+    "info": {
+        "title": "Account Service",
+        "version": "1.0.0",
+        "description": "Manages user accounts in the system.\n",
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0"
+        }
+    },
+    "servers": {
+        "production": {
+            "url": "mqtt://test.mosquitto.org",
+            "protocol": "mqtt",
+            "description": "Test MQTT broker"
+        }
+    },
+    "channels": {
+        "user/signedup": {
+            "subscribe": {
+                "operationId": "emitUserSignUpEvent",
+                "message": {
+                    "$ref": "common-messages.json#/components/messages/UserSignedUp"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Account Service Types",
+        "version": "1.0.0"
+    },
+    "components": {
+        "schemas": {
+            "userSignedUpPayload": {
+                "type": "object",
+                "properties": {
+                    "firstName": {
+                        "type": "string",
+                        "description": "foo"
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "description": "bar"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "baz"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            }
+        }
+    }
+}
