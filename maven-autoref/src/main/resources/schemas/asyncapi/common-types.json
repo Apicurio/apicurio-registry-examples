@@ -1,78 +1,32 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "Common Base Types",
+        "title": "Account Service Types",
         "version": "1.0.0"
     },
     "components": {
         "schemas": {
-            "User": {
+            "userSignedUpPayload": {
                 "type": "object",
                 "properties": {
-                    "displayName": {
+                    "firstName": {
                         "type": "string",
-                        "description": "Name of the user"
+                        "description": "foo"
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "description": "bar"
                     },
                     "email": {
                         "type": "string",
                         "format": "email",
-                        "description": "Email of the user"
-                    }
-                }
-            },
-            "Person": {
-                "title": "Root Type for Person",
-                "description": "",
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string"
+                        "description": "baz"
                     },
-                    "height": {
-                        "format": "int32",
-                        "type": "integer"
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
                     }
-                },
-                "example": {
-                    "name": "Eric",
-                    "height": 134
                 }
-            },
-            "Error": {
-                "title": "Root Type for Error",
-                "description": "",
-                "type": "object",
-                "properties": {
-                    "code": {
-                        "format": "int32",
-                        "type": "integer"
-                    }
-                },
-                "example": {
-                    "code": 404
-                }
-            }
-        },
-        "responses": {
-            "NotFound": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                },
-                "description": ""
-            },
-            "ServerError": {
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/Error"
-                        }
-                    }
-                },
-                "description": ""
             }
         }
     }

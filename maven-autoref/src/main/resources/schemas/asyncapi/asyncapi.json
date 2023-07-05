@@ -1,31 +1,27 @@
 {
-    "asyncapi": "2.6.0",
+    "asyncapi": "2.5.0",
     "info": {
         "title": "Account Service",
         "version": "1.0.0",
-        "description": "This service is in charge of processing user signups"
+        "description": "Manages user accounts in the system.\n",
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0"
+        }
+    },
+    "servers": {
+        "production": {
+            "url": "mqtt://test.mosquitto.org",
+            "protocol": "mqtt",
+            "description": "Test MQTT broker"
+        }
     },
     "channels": {
         "user/signedup": {
             "subscribe": {
+                "operationId": "emitUserSignUpEvent",
                 "message": {
-                    "$ref": "#/components/messages/UserSignedUp"
-                }
-            }
-        },
-        "user/externalAvro": {
-            "subscribe": {
-                "message": {
-                    "$ref": "./TradeKey.avsc"
-                }
-            }
-        }
-    },
-    "components": {
-        "messages": {
-            "UserSignedUp": {
-                "payload": {
-                    "$ref": "./common-types.json#/components/schemas/User"
+                    "$ref": "common-messages.json#/components/messages/UserSignedUp"
                 }
             }
         }

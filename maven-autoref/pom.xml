@@ -26,6 +26,9 @@
                         <phase>process-test-resources</phase>
                         <configuration>
                             <registryUrl>http://localhost:8080/apis/registry/v2</registryUrl>
+                            <authServerUrl>https://studio-auth.apicur.io/auth</authServerUrl>
+                            <username>service-account-1</username>
+                            <password>ejoFFvbmxTzRCXd2PACYefFyJB4Ov3Ge</password>
                             <existingReferences>
                                 <existingReference>
                                     <resourceName>google/protobuf/timestamp.proto</resourceName>
@@ -43,6 +46,15 @@
                                     <type>PROTOBUF</type>
                                     <file>
                                         ${project.basedir}/src/main/resources/schemas/_global/google/protobuf/timestamp.proto
+                                    </file>
+                                    <ifExists>RETURN_OR_UPDATE</ifExists>
+                                </artifact>
+                                <artifact>
+                                    <groupId>simple</groupId>
+                                    <artifactId>AccountService</artifactId>
+                                    <type>ASYNCAPI</type>
+                                    <file>
+                                        ${project.basedir}/src/main/resources/schemas/simple/asyncapi.json
                                     </file>
                                     <ifExists>RETURN_OR_UPDATE</ifExists>
                                 </artifact>
