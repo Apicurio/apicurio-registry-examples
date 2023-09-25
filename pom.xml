@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.apicurio</groupId>
@@ -50,10 +51,7 @@
         <module>simple-avro-downstream</module>
         <module>rest-client-downstream</module>
         <module>serdes-with-references</module>
-        <module>avro-maven-with-references</module>
-        <module>avro-maven-with-references-auto</module>
         <module>protobuf-validation</module>
-        <module>debezium-openshift</module>
         <!--<module>camel-quarkus-kafka</module>-->
     </modules>
 
@@ -258,6 +256,33 @@
     </build>
 
     <profiles>
+        <profile>
+            <!--
+             Some examples (such as those that use apicurio-registry-maven-plugin)
+             require a specific environment (a running Registry) to be built.
+             This profile is used by CI to skip building those modules as a temporary solution.
+             See https://github.com/Apicurio/apicurio-registry-examples/issues/47
+             -->
+            <id>ci</id>
+            <activation>
+                <property>
+                    <name>ci</name>
+                </property>
+            </activation>
+        </profile>
+        <profile>
+            <id>no-ci</id>
+            <activation>
+                <property>
+                    <name>!ci</name>
+                </property>
+            </activation>
+            <modules>
+                <module>avro-maven-with-references</module>
+                <module>avro-maven-with-references-auto</module>
+                <module>debezium-openshift</module>
+            </modules>
+        </profile>
         <profile>
             <id>java8</id>
             <activation>
