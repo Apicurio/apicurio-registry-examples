@@ -49,7 +49,7 @@ jobs:
         run: cd apicurio-registry-examples && ./mvnw dependency:tree --no-transfer-progress
 
       - name: Build Registry Examples
-        run: cd apicurio-registry-examples && ./mvnw clean install --no-transfer-progress
+        run: cd apicurio-registry-examples && ./mvnw clean install --no-transfer-progress -Dci
 
       - name: Google Chat Notification
         if: ${{ failure() }}
