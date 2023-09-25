@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-project:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     if: github.repository_owner == 'Apicurio'
     steps:
       - name: Checkout Code with Ref '${{ github.ref }}'
