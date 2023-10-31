@@ -52,6 +52,7 @@
         <module>rest-client-downstream</module>
         <module>serdes-with-references</module>
         <module>protobuf-validation</module>
+        <module>tools/kafkasql-topic-import</module>
         <!--<module>camel-quarkus-kafka</module>-->
     </modules>
 
