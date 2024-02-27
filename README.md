@@ -1,3 +1,7 @@
+The examples on this repository have been moved to the [main Apicurio Registry Repository under](https://github.com/Apicurio/apicurio-registry/examples).
+
+
+
 # Apicurio Registry Example Applications
 This repository contains a set of example applications (mostly Kafka applications) that use the
 Apicurio Registry as part of their workflow.  The registry is typically used to store schemas 
