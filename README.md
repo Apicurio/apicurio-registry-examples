@@ -1,4 +1,4 @@
-The examples on this repository have been moved to the [main Apicurio Registry Repository under](https://github.com/Apicurio/apicurio-registry/examples).
+The examples on this repository have been moved to the [main Apicurio Registry Repository](https://github.com/Apicurio/apicurio-registry/examples).
 
 
 
